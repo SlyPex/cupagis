@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     const MaterialApp(
-      title: 'Cubajis',
+      title: 'Cupajis',
       debugShowCheckedModeBanner: false,
       home: MyApp(),
     ),
@@ -53,31 +53,39 @@ class _MyAppState extends State<MyApp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Expanded(
+                  Container(
                     child: TextField(
                       readOnly: true,
                       decoration: InputDecoration(
                           labelText: "X :", border: OutlineInputBorder()),
                     ),
+                    width: 60,
                   ),
-                  const Expanded(
+                  Container(
                     child: TextField(
                       readOnly: true,
                       decoration: InputDecoration(
                           labelText: "Y :", border: OutlineInputBorder()),
                     ),
+                    // ),
+                    width: 60,
                   ),
-                  MaterialButton(
-                    // ignore: avoid_print
-                    onPressed: () async {},
-                    color: Colors.blue,
-                    textColor: Colors.white,
-                    child: const Icon(
-                      Icons.add_location_alt_outlined,
-                      size: 24,
+                  Container(
+                    width: 50,
+                    height: 50,
+                    child: MaterialButton(
+                      onPressed: () async {},
+                      color: Colors.blue,
+                      textColor: Colors.white,
+                      child: const Icon(
+                        Icons.add_location_alt_outlined,
+                        size: 24,
+                      ),
+                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                     ),
-                    padding: const EdgeInsets.all(12),
-                    shape: const CircleBorder(),
+                    // margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                   )
                 ],
               )
