@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:geolocator/geolocator.dart';
 void main() {
   runApp(
     const MaterialApp(
@@ -18,6 +18,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  TextEditingController locationlat = TextEditingController();
+  TextEditingController locationlong = TextEditingController();
   final items = [
     "Humidité",
     "Phosphore",
@@ -26,7 +28,21 @@ class _MyAppState extends State<MyApp> {
     "Argent",
   ];
   String? value;
-
+  late String latiude;
+  late String longtitude;
+  void getlocation() async {
+    var position =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    var lat=position.latitude;
+    var long=position.longitude;
+    latiude='$lat';
+    longtitude='$long';
+    print(latiude);
+    print(longtitude);
+setState(() {
+locationlat.text=latiude;
+locationlong.text=longtitude;
+});
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +71,7 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   Container(
                     child: TextField(
+                      controller: locationlat,
                       readOnly: true,
                       decoration: InputDecoration(
                           labelText: "X :", border: OutlineInputBorder()),
@@ -63,6 +80,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   Container(
                     child: TextField(
+                      controller: locationlong,
                       readOnly: true,
                       decoration: InputDecoration(
                           labelText: "Y :", border: OutlineInputBorder()),
@@ -74,7 +92,7 @@ class _MyAppState extends State<MyApp> {
                     width: 50,
                     height: 50,
                     child: MaterialButton(
-                      onPressed: () async {},
+                      onPressed: () async {getlocation();},
                       color: Colors.blue,
                       textColor: Colors.white,
                       child: const Icon(
@@ -86,7 +104,8 @@ class _MyAppState extends State<MyApp> {
                           borderRadius: BorderRadius.circular(20)),
                     ),
                     // margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  )
+                  ),
+                  
                 ],
               )
             ],
