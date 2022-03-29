@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+
 void main() {
   runApp(
     const MaterialApp(
@@ -20,6 +21,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   TextEditingController locationlat = TextEditingController();
   TextEditingController locationlong = TextEditingController();
+  TextEditingController locationalt = TextEditingController();
   final items = [
     "Humidité",
     "Phosphore",
@@ -30,88 +32,102 @@ class _MyAppState extends State<MyApp> {
   String? value;
   late String latiude;
   late String longtitude;
+  late String altitude;
   void getlocation() async {
-    var position =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    var lat=position.latitude;
-    var long=position.longitude;
-    latiude='$lat';
-    longtitude='$long';
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    var lat = position.latitude;
+    var long = position.longitude;
+    var alt = position.altitude;
+    latiude = '$lat';
+    longtitude = '$long';
+    altitude = '$alt';
     print(latiude);
     print(longtitude);
-setState(() {
-locationlat.text=latiude;
-locationlong.text=longtitude;
-});
+    setState(() {
+      locationlat.text = latiude;
+      locationlong.text = longtitude;
+      locationalt.text = altitude;
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        // appBar: AppBar(),
         body: Container(
-          child: Column(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(
+                labelText: "Attribut", border: OutlineInputBorder()),
+            value: value,
+            isExpanded: true,
+            items: items.map(buildMenuitem).toList(),
+            onChanged: (value) => setState(() => this.value = value),
+          ),
+          const TextField(
+            decoration: InputDecoration(
+                labelText: "Value", border: OutlineInputBorder()),
+            toolbarOptions: ToolbarOptions(
+                copy: true, cut: true, paste: false, selectAll: true),
+            keyboardType: TextInputType.number,
+          ),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                    labelText: "Attribut", border: OutlineInputBorder()),
-                value: value,
-                isExpanded: true,
-                items: items.map(buildMenuitem).toList(),
-                onChanged: (value) => setState(() => this.value = value),
+              Container(
+                child: TextField(
+                  controller: locationlat,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                      labelText: "X :", border: OutlineInputBorder()),
+                ),
+                width: 60,
               ),
-              const TextField(
-                decoration: InputDecoration(
-                    labelText: "Value", border: OutlineInputBorder()),
-                toolbarOptions: ToolbarOptions(
-                    copy: true, cut: true, paste: false, selectAll: true),
-                keyboardType: TextInputType.number,
+              Container(
+                child: TextField(
+                  controller: locationlong,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                      labelText: "Y :", border: OutlineInputBorder()),
+                ),
+                width: 60,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    child: TextField(
-                      controller: locationlat,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                          labelText: "X :", border: OutlineInputBorder()),
-                    ),
-                    width: 60,
+              Container(
+                child: TextField(
+                  controller: locationalt,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                      labelText: "Z :", border: OutlineInputBorder()),
+                ),
+                width: 60,
+              ),
+              Container(
+                width: 50,
+                height: 50,
+                child: MaterialButton(
+                  onPressed: () async {
+                    getlocation();
+                  },
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  child: const Icon(
+                    Icons.add_location_alt_outlined,
+                    size: 24,
                   ),
-                  Container(
-                    child: TextField(
-                      controller: locationlong,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                          labelText: "Y :", border: OutlineInputBorder()),
-                    ),
-                    // ),
-                    width: 60,
-                  ),
-                  Container(
-                    width: 50,
-                    height: 50,
-                    child: MaterialButton(
-                      onPressed: () async {getlocation();},
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                      child: const Icon(
-                        Icons.add_location_alt_outlined,
-                        size: 24,
-                      ),
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                    ),
-                    // margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  ),
-                  
-                ],
-              )
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                ),
+              ),
             ],
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 24.0),
-        ));
+          )
+        ],
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 24.0),
+    ));
   }
 
   DropdownMenuItem<String> buildMenuitem(String item) =>
