@@ -1,0 +1,188 @@
+[{
+    "ITEM": "PANEL_HUMID",
+    "INTITULE": "Données Humidité",
+    "FORMAT": "0000",
+    "VISIBLE": "1",
+    "UI_TYPE": "REAL",
+    "UI_READ_ONLY": "false",
+    "VALUES": [],
+    "SUBITEMS": [{
+            "SUBITEM": "PANEL_HUMID_VALUE",
+            "INTITULE": "Humidité",
+            "FORMAT": "0000",
+            "VISIBLE": "1",
+            "UI_TYPE": "REAL",
+            "UI_READ_ONLY": "false",
+            "VALUES": [],
+            "VALUE": ""
+        }, {
+            "RUBRIQUE": "PANEL_HUMID_DATE",
+            "INTITULE": "Date",
+            "FORMAT": "",
+            "VISIBLE": "0",
+            "UI_TYPE": "DATE",
+            "VALUES": [],
+            "UI_READ_ONLY": "false",
+            "VALUE": ""
+        },
+        {
+            "SUBITEM": "PANEL_HUMID_GPS",
+            "INTITULE": "GPS",
+            "FORMAT": "0000",
+            "VISIBLE": "1",
+            "UI_TYPE": "GPS",
+            "UI_READ_ONLY": "false",
+            "VALUES": [],
+            "VALUE": ""
+        }
+    ]
+},
+{
+    "ITEM": "PANEL_AZOTE",
+    "INTITULE": "Données Azote",
+    "FORMAT": "0000",
+    "VISIBLE": "1",
+    "UI_TYPE": "REAL",
+    "UI_READ_ONLY": "false",
+    "VALUES": [],
+    "SUBITEMS": [{
+        "SUBITEM": "PANEL_AZOTE_VALUE",
+        "INTITULE": "Azote",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "REAL",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }, {
+        "RUBRIQUE": "PANEL_AZOTE_DATE",
+        "INTITULE": "Date",
+        "FORMAT": "",
+        "VISIBLE": "0",
+        "UI_TYPE": "DATE",
+        "VALUES": [],
+        "UI_READ_ONLY": "false",
+        "VALUE": ""
+    }, {
+        "SUBITEM": "PANEL_AZOTE_GPS",
+        "INTITULE": "GPS",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "GPS",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }]
+},
+{
+    "ITEM": "PANEL_PHOSPHATE",
+    "INTITULE": "Données Phosphate",
+    "FORMAT": "0000",
+    "VISIBLE": "1",
+    "UI_TYPE": "REAL",
+    "UI_READ_ONLY": "false",
+    "VALUES": [],
+    "SUBITEMS": [{
+        "SUBITEM": "PANEL_PHOSPHATE_VALUE",
+        "INTITULE": "Phosphate",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "REAL",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }, {
+        "RUBRIQUE": "PANEL_PHOSPHATE_DATE",
+        "INTITULE": "Date",
+        "FORMAT": "",
+        "VISIBLE": "0",
+        "UI_TYPE": "DATE",
+        "VALUES": [],
+        "UI_READ_ONLY": "false",
+        "VALUE": ""
+    }, {
+        "SUBITEM": "PANEL_PHOSPHATE_GPS",
+        "INTITULE": "GPS",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "GPS",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }]
+},
+{
+    "ITEM": "PANEL_INFO",
+    "INTITULE": "Information Libre",
+    "FORMAT": "0000",
+    "VISIBLE": "1",
+    "UI_TYPE": "REAL",
+    "UI_READ_ONLY": "false",
+    "VALUES": [],
+    "SUBITEMS": [{
+        "SUBITEM": "PANEL_INFO_CLIM",
+        "INTITULE": "Description du climat",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "REAL",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }, {
+        "RUBRIQUE": "PANEL_HUMID_DATE",
+        "INTITULE": "Date",
+        "FORMAT": "",
+        "VISIBLE": "0",
+        "UI_TYPE": "DATE",
+        "VALUES": [],
+        "UI_READ_ONLY": "false",
+        "VALUE": ""
+    }]
+},
+{
+    "ITEM": "DIVINER",
+    "INTITULE": "Humidité Diviner",
+    "FORMAT": "0000",
+    "VISIBLE": "1",
+    "UI_TYPE": "MULTIPLE",
+    "UI_READ_ONLY": "false",
+    "VALUES": [],
+    "SUBITEMS": [{
+        "SUBITEM": "PRONF",
+        "INTITULE": "Profondeur",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "REAL",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }, {
+        "SUBITEM": "HUMIDITE",
+        "INTITULE": "Humidité",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "REAL",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }, {
+        "RUBRIQUE": "PANEL_HUMID_DATE",
+        "INTITULE": "Date",
+        "FORMAT": "",
+        "VISIBLE": "0",
+        "UI_TYPE": "DATE",
+        "VALUES": [],
+        "UI_READ_ONLY": "false",
+        "VALUE": ""
+    }, {
+        "SUBITEM": "GPS",
+        "INTITULE": "GPS",
+        "FORMAT": "0000",
+        "VISIBLE": "1",
+        "UI_TYPE": "GPS",
+        "UI_READ_ONLY": "false",
+        "VALUES": [],
+        "VALUE": ""
+    }]
+}
+]

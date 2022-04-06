@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+
+import 'package:cupajis/datatypes.dart';
+import 'package:cupajis/userinput.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter/services.dart' as rootBundle;
 
 void main() {
   runApp(
@@ -28,11 +34,23 @@ class _MyAppState extends State<MyApp> {
     "Kolt",
     "Or",
     "Argent",
+    "PANEL_HUMID",
+    "PANEL_AZOTE",
+    "PANEL_PHOSPHATE",
+    "PANEL_INFO",
+    "DIVINER"
   ];
-  String? value;
+  
+   String? value;
   late String latiude;
   late String longtitude;
   late String altitude;
+  
+  
+
+  
+
+  
   void getlocation() async {
     var position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
@@ -81,26 +99,43 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
+             dropdownmenu(),
+           
+       
+        forms(),
+            
+               submitbutton()
+            ],
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
+        )));
+  }
+
+  DropdownMenuItem<String> buildMenuitem(String item) =>
+      DropdownMenuItem(value: item, child: Text(item));
+
+      Widget dropdownmenu(){
+        return Container(
                   child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
                         labelText: "Attribut", border: OutlineInputBorder()),
                     value: value,
                     isExpanded: true,
                     items: items.map(buildMenuitem).toList(),
-                    onChanged: (value) => setState(() => this.value = value),
+                    
+                    onChanged: (value){
+                      
+                      setState(() {
+                      this.value = value;
+                      
+                    });},
                   ),
-                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 22)),
-              Container(
-                  child: const TextField(
-                    decoration: InputDecoration(
-                        labelText: "Value", border: OutlineInputBorder()),
-                    toolbarOptions: ToolbarOptions(
-                        copy: true, cut: true, paste: false, selectAll: true),
-                    keyboardType: TextInputType.number,
-                  ),
-                  margin: const EdgeInsets.fromLTRB(0, 22, 0, 22)),
-              Container(
+                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 22));
+      }
+     
+     
+      Widget gpsinput(){
+        return Container(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -158,8 +193,10 @@ class _MyAppState extends State<MyApp> {
                   ],
                 ),
                 margin: EdgeInsets.fromLTRB(0, 22, 0, 22),
-              ),
-              Container(
+              );
+      }
+      Widget submitbutton(){
+        return Container(
                 height: 60,
                 width: 150,
                 child: MaterialButton(
@@ -174,16 +211,43 @@ class _MyAppState extends State<MyApp> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15)),
                 ),
-              )
-            ],
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
-        )));
-  }
+              );
+      }
+      Widget forms(){
+        return FutureBuilder(
+          future: ReadJsonData(),
+          builder: (context, data){
+            var item = data.data as List<datatype>;
+            var count;
+  
+         var i= item.indexWhere((element) => element.item==value);
+          if(i!=-1){
+          count=item[i].subitems?.length;
+          
+            return ListView.builder(
+        itemCount: count,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context,int index){
+        
+        if(item[i].subitems![index].intitule.toString()=='GPS')
+        return gpsinput();
+        else
+          return inputform(item[i].subitems![index].intitule.toString());
+       
+        });
+        }
+        else{return Container();}
+         });
+      }
+      Future<List<datatype>>ReadJsonData() async{
+        final jsondata = await rootBundle.rootBundle.loadString('jsons/data-types.json');
+        final list = jsonDecode(jsondata) as List<dynamic>;
+       
+        return list.map((e) => datatype.fromJson(e)).toList();  
 
-  DropdownMenuItem<String> buildMenuitem(String item) =>
-      DropdownMenuItem(value: item, child: Text(item));
-}
+      }
+  
+} 
 
 // class VerticalDividerWidget extends StatelessWidget {
   // @override
