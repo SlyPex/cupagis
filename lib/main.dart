@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
     "DIVINER"
   ];
   
-   String? value;
+    String? value;
   late String latiude;
   late String longtitude;
   late String altitude;
@@ -70,6 +70,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
         appBar: AppBar(),
         // bottomNavigationBar: BottomAppBar(
         // child:
@@ -94,15 +95,15 @@ class _MyAppState extends State<MyApp> {
         // ]),
         // color: Colors.blue,
         // ),
+        drawer: NavigationDrawer(),
         body: SingleChildScrollView(
             child: Container(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-             dropdownmenu(),
-           
-       
-        forms(),
+           //  dropdownmenu(),
+
+            forms(),
             
                submitbutton()
             ],
@@ -110,11 +111,64 @@ class _MyAppState extends State<MyApp> {
           margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
         )));
   }
-
-  DropdownMenuItem<String> buildMenuitem(String item) =>
-      DropdownMenuItem(value: item, child: Text(item));
-
-      Widget dropdownmenu(){
+Widget buildMenuitem({
+  required String text,
+  VoidCallback? onClicked}){
+    return ListTile(
+             title: Text(text),
+             onTap: onClicked
+              );
+}
+ // DropdownMenuItem<String> buildMenuitem(String item) =>
+   //   DropdownMenuItem(value: item, child: Text(item));
+      Widget NavigationDrawer(){
+        final isColapsed=true;
+        return Container(
+          //width: MediaQuery.of(context).size.width * 0.2,
+          child: Drawer(
+          child:Container(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
+            color: Color(0xFF1a2f45),
+            child: Column(children: [
+              draweritem(),
+              
+              buildcollapseIcon(context,isColapsed)
+            ]),
+          ),
+          
+        )
+        );
+      }
+      Widget draweritem(){
+        return Container(
+          child: Expanded(
+            child:ListView.builder(
+            shrinkWrap: true,
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+         //   return ListTile(
+          //   title: Text(items[index]),
+         //    onTap: (){
+          //   },
+          //    ); 
+          final item=items[index];
+              return buildMenuitem(text: items[index],
+              
+              onClicked: (){
+                setState(() {
+                  value=item;
+                });
+                Navigator.pop(context);
+              }
+              );
+          }
+        ) ,
+            ) 
+          
+        );
+        
+      }
+    /*  Widget dropdownmenu(){
         return Container(
                   child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
@@ -131,9 +185,20 @@ class _MyAppState extends State<MyApp> {
                     });},
                   ),
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 22));
-      }
+      }*/
      
-     
+     Widget buildcollapseIcon(BuildContext context,bool isColapsed){
+       final double size=52;
+       final icon= isColapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios;
+       return InkWell(
+         child :Container(
+         width: size,
+         height: size,
+         child: Icon(icon,color: Colors.white,),
+       ),
+       onTap: (){}
+       );
+     }
       Widget gpsinput(){
         return Container(
                 child: Row(
@@ -228,13 +293,13 @@ class _MyAppState extends State<MyApp> {
         itemCount: count,
         shrinkWrap: true,
         itemBuilder: (BuildContext context,int index){
-        
         if(item[i].subitems![index].intitule.toString()=='GPS')
         return gpsinput();
         else
           return inputform(item[i].subitems![index].intitule.toString());
        
         });
+      
         }
         else{return Container();}
          });
