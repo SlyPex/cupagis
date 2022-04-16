@@ -114,17 +114,26 @@ class _MyAppState extends State<MyApp> {
 Widget buildMenuitem({
   required String text,
   VoidCallback? onClicked}){
-    return ListTile(
+    return Container(
+      height: 100,
+      child:Material(
+        color: Colors.transparent,
+      child: RotatedBox(
+      quarterTurns: 1,
+     child: ListTile(      
              title: Text(text),
              onTap: onClicked
-              );
+              )
+              )
+              )
+              ) ;
 }
  // DropdownMenuItem<String> buildMenuitem(String item) =>
    //   DropdownMenuItem(value: item, child: Text(item));
       Widget NavigationDrawer(){
-        final isColapsed=true;
+        
         return Container(
-          //width: MediaQuery.of(context).size.width * 0.2,
+          width: MediaQuery.of(context).size.width * 0.2,
           child: Drawer(
           child:Container(
             padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
@@ -132,7 +141,7 @@ Widget buildMenuitem({
             child: Column(children: [
               draweritem(),
               
-              buildcollapseIcon(context,isColapsed)
+              buildcollapseIcon(context)
             ]),
           ),
           
@@ -187,16 +196,18 @@ Widget buildMenuitem({
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 22));
       }*/
      
-     Widget buildcollapseIcon(BuildContext context,bool isColapsed){
+     Widget buildcollapseIcon(BuildContext context){
        final double size=52;
-       final icon= isColapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios;
+       final icon= Icons.arrow_back_ios;
        return InkWell(
          child :Container(
          width: size,
          height: size,
          child: Icon(icon,color: Colors.white,),
        ),
-       onTap: (){}
+       onTap: (){
+         Navigator.pop(context);
+       }
        );
      }
       Widget gpsinput(){
