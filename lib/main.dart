@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-
 import 'package:cupajis/datatypes.dart';
 import 'package:cupajis/userinput.dart';
 import 'package:flutter/material.dart';
@@ -40,18 +38,20 @@ class _MyAppState extends State<MyApp> {
     "PANEL_INFO",
     "DIVINER"
   ];
-  
-    String? value;
+
+  String? value;
   late String latiude;
   late String longtitude;
   late String altitude;
-  
-  
-
-  
-
-  
   void getlocation() async {
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error('Location Not Available');
+      }
+    } 
     var position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
     var lat = position.latitude;
@@ -70,268 +70,235 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
         appBar: AppBar(),
-        // bottomNavigationBar: BottomAppBar(
-        // child:
-        // Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        // Expanded(
-        // child: MaterialButton(
-        // child: Icon(
-        // Icons.home_rounded,
-        // color: Colors.white,
-        // size: 40,
-        // ),
-        // onPressed: () async {})),
-        // VerticalDividerWidget(),
-        // Expanded(
-        // child: MaterialButton(
-        // child: Icon(
-        // Icons.save_rounded,
-        // color: Colors.white,
-        // size: 40,
-        // ),
-        // onPressed: () async {}))
-        // ]),
-        // color: Colors.blue,
-        // ),
+        bottomNavigationBar: BottomAppBar(
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            Expanded(
+                child: MaterialButton(
+                    child: Icon(
+                      Icons.home_rounded,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    onPressed: () async {})),
+            // VerticalDividerWidget(),
+            Expanded(
+                child: MaterialButton(
+                    child: Icon(
+                      Icons.save_rounded,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    onPressed: () async {}))
+          ]),
+          color: Colors.blue,
+        ),
         drawer: NavigationDrawer(),
         body: SingleChildScrollView(
             child: Container(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-           //  dropdownmenu(),
+              //  dropdownmenu(),
 
-            forms(),
-            
-               submitbutton()
+              forms(),
+
+              submitbutton()
             ],
           ),
           margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
         )));
   }
-Widget buildMenuitem({
-  required String text,
-  VoidCallback? onClicked}){
+
+  Widget buildMenuitem({required String text, VoidCallback? onClicked}) {
     return Container(
-      height: 100,
-      child:Material(
-        color: Colors.transparent,
-      child: RotatedBox(
-      quarterTurns: 1,
-     child: ListTile(      
-             title: Text(text),
-             onTap: onClicked
-              )
-              )
-              )
-              ) ;
-}
- // DropdownMenuItem<String> buildMenuitem(String item) =>
-   //   DropdownMenuItem(value: item, child: Text(item));
-      Widget NavigationDrawer(){
-        
-        return Container(
-          width: MediaQuery.of(context).size.width * 0.2,
-          child: Drawer(
-          child:Container(
-            padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
+        height: 100,
+        child: Material(
+            color: Colors.transparent,
+            child: RotatedBox(
+                quarterTurns: 1,
+                child: ListTile(title: Text(text), onTap: onClicked))));
+  }
+
+  Widget NavigationDrawer() {
+    return Container(
+        width: MediaQuery.of(context).size.width * 0.2,
+        child: Drawer(
+          child: Container(
+            padding:
+                EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
             color: Color(0xFF1a2f45),
-            child: Column(children: [
-              draweritem(),
-              
-              buildcollapseIcon(context)
-            ]),
+            child: Column(children: [draweritem(), buildcollapseIcon(context)]),
           ),
-          
-        )
-        );
-      }
-      Widget draweritem(){
-        return Container(
-          child: Expanded(
-            child:ListView.builder(
-            shrinkWrap: true,
+        ));
+  }
+
+  Widget draweritem() {
+    return Container(
+        child: Expanded(
+      child: ListView.builder(
+          shrinkWrap: true,
           itemCount: items.length,
           itemBuilder: (context, index) {
-         //   return ListTile(
-          //   title: Text(items[index]),
-         //    onTap: (){
-          //   },
-          //    ); 
-          final item=items[index];
-              return buildMenuitem(text: items[index],
-              
-              onClicked: (){
-                setState(() {
-                  value=item;
+            //   return ListTile(
+            //   title: Text(items[index]),
+            //    onTap: (){
+            //   },
+            //    );
+            final item = items[index];
+            return buildMenuitem(
+                text: items[index],
+                onClicked: () {
+                  setState(() {
+                    value = item;
+                  });
+                  Navigator.pop(context);
                 });
-                Navigator.pop(context);
-              }
-              );
-          }
-        ) ,
-            ) 
-          
-        );
-        
-      }
-    /*  Widget dropdownmenu(){
-        return Container(
-                  child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                        labelText: "Attribut", border: OutlineInputBorder()),
-                    value: value,
-                    isExpanded: true,
-                    items: items.map(buildMenuitem).toList(),
-                    
-                    onChanged: (value){
-                      
-                      setState(() {
-                      this.value = value;
-                      
-                    });},
-                  ),
-                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 22));
-      }*/
-     
-     Widget buildcollapseIcon(BuildContext context){
-       final double size=52;
-       final icon= Icons.arrow_back_ios;
-       return InkWell(
-         child :Container(
-         width: size,
-         height: size,
-         child: Icon(icon,color: Colors.white,),
-       ),
-       onTap: (){
-         Navigator.pop(context);
-       }
-       );
-     }
-      Widget gpsinput(){
-        return Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: TextField(
-                            controller: locationlat,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                                labelText: "X :", border: OutlineInputBorder()),
-                          ),
-                          width: 100,
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: TextField(
-                            controller: locationlong,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                                labelText: "Y :", border: OutlineInputBorder()),
-                          ),
-                          width: 100,
-                        ),
-                        Container(
-                          child: TextField(
-                            controller: locationalt,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                                labelText: "Z :", border: OutlineInputBorder()),
-                          ),
-                          width: 100,
-                        )
-                      ],
-                    ),
-                    Container(
-                      width: 70,
-                      height: 50,
-                      child: MaterialButton(
-                        onPressed: () async {
-                          getlocation();
-                        },
-                        color: Colors.blue,
-                        textColor: Colors.white,
-                        child: const Icon(
-                          Icons.add_location_alt_outlined,
-                          size: 24,
-                        ),
-                        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                      ),
-                    ),
-                  ],
-                ),
-                margin: EdgeInsets.fromLTRB(0, 22, 0, 22),
-              );
-      }
-      Widget submitbutton(){
-        return Container(
-                height: 60,
-                width: 150,
-                child: MaterialButton(
-                  onPressed: () async {},
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  child: const Icon(
-                    Icons.add,
-                    size: 42,
-                  ),
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                ),
-              );
-      }
-      Widget forms(){
-        return FutureBuilder(
-          future: ReadJsonData(),
-          builder: (context, data){
-            var item = data.data as List<datatype>;
-            var count;
-  
-         var i= item.indexWhere((element) => element.item==value);
-          if(i!=-1){
-          count=item[i].subitems?.length;
-          
-            return ListView.builder(
-        itemCount: count,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context,int index){
-        if(item[i].subitems![index].intitule.toString()=='GPS')
-        return gpsinput();
-        else
-          return inputform(item[i].subitems![index].intitule.toString());
-       
-        });
-      
-        }
-        else{return Container();}
-         });
-      }
-      Future<List<datatype>>ReadJsonData() async{
-        final jsondata = await rootBundle.rootBundle.loadString('jsons/data-types.json');
-        final list = jsonDecode(jsondata) as List<dynamic>;
-       
-        return list.map((e) => datatype.fromJson(e)).toList();  
+          }),
+    ));
+  }
 
-      }
-  
-} 
+  Widget buildcollapseIcon(BuildContext context) {
+    final double size = 52;
+    final icon = Icons.arrow_back_ios;
+    return InkWell(
+        child: Container(
+          width: size,
+          height: size,
+          child: Icon(
+            icon,
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        });
+  }
+
+  Widget gpsinput() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            children: [
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: TextField(
+                  controller: locationlat,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                      labelText: "X :", border: OutlineInputBorder()),
+                ),
+                width: 100,
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: TextField(
+                  controller: locationlong,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                      labelText: "Y :", border: OutlineInputBorder()),
+                ),
+                width: 100,
+              ),
+              Container(
+                child: TextField(
+                  controller: locationalt,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                      labelText: "Z :", border: OutlineInputBorder()),
+                ),
+                width: 100,
+              )
+            ],
+          ),
+          Container(
+            width: 70,
+            height: 50,
+            child: MaterialButton(
+              onPressed: () async {
+                getlocation();
+              },
+              color: Colors.blue,
+              textColor: Colors.white,
+              child: const Icon(
+                Icons.add_location_alt_outlined,
+                size: 24,
+              ),
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+            ),
+          ),
+        ],
+      ),
+      margin: EdgeInsets.fromLTRB(0, 22, 0, 22),
+    );
+  }
+
+  Widget submitbutton() {
+    return Container(
+      height: 60,
+      width: 150,
+      child: MaterialButton(
+        onPressed: () async {},
+        color: Colors.blue,
+        textColor: Colors.white,
+        child: const Icon(
+          Icons.add,
+          size: 42,
+        ),
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      ),
+    );
+  }
+
+  Widget forms() {
+    return FutureBuilder(
+        future: ReadJsonData(),
+        builder: (context, data) {
+          var item = data.data as List<datatype>;
+          var count;
+
+          var i = item.indexWhere((element) => element.item == value);
+          if (i != -1) {
+            count = item[i].subitems?.length;
+
+            return ListView.builder(
+                itemCount: count,
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  if (item[i].subitems![index].intitule.toString() == 'GPS')
+                    return gpsinput();
+                  else
+                    return inputform(
+                        item[i].subitems![index].intitule.toString());
+                });
+          } else {
+            return Container();
+          }
+        });
+  }
+
+  Future<List<datatype>> ReadJsonData() async {
+    final jsondata =
+        await rootBundle.rootBundle.loadString('jsons/data-types.json');
+    final list = jsonDecode(jsondata) as List<dynamic>;
+
+    return list.map((e) => datatype.fromJson(e)).toList();
+  }
+}
 
 // class VerticalDividerWidget extends StatelessWidget {
-  // @override
-  // Widget build(BuildContext context) {
-    // return Container(
-      // height: 48,
-      // width: 2,
-      // color: Colors.white,
-    // );
-  // }
+// @override
+// Widget build(BuildContext context) {
+// return Container(
+// height: 48,
+// width: 2,
+// color: Colors.white,
+// );
+// }
 // }
