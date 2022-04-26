@@ -1,11 +1,21 @@
 import 'dart:convert';
 import 'package:cupajis/datatypes.dart';
+import 'package:intl/intl.dart';
+import 'package:cupajis/output.dart';
 import 'package:cupajis/userinput.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:cupajis/databox.dart';
+import 'package:cupajis/hivemodel/datalist.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/services.dart' as rootBundle;
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(datalistAdapter());
+  await Hive.openBox<datalist>('datas');
   runApp(
     const MaterialApp(
       title: 'Cupajis',
@@ -26,19 +36,18 @@ class _MyAppState extends State<MyApp> {
   TextEditingController locationlat = TextEditingController();
   TextEditingController locationlong = TextEditingController();
   TextEditingController locationalt = TextEditingController();
+  var Textcontroller = [];
+ int id=0;
+ DateTime dateTime=DateTime.now();
   final items = [
     "Humidité",
-    "Phosphore",
-    "Kolt",
-    "Or",
-    "Argent",
-    "PANEL_HUMID",
-    "PANEL_AZOTE",
-    "PANEL_PHOSPHATE",
-    "PANEL_INFO",
-    "DIVINER"
+    "Azote",
+    "Phosphate",
+    "Information Libre",
+    "Humidité Diviner"
   ];
-
+  List<datatype> item = [];
+var hello;
   String? value;
   late String latiude;
   late String longtitude;
@@ -51,7 +60,7 @@ class _MyAppState extends State<MyApp> {
       if (permission == LocationPermission.deniedForever) {
         return Future.error('Location Not Available');
       }
-    } 
+    }
     var position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
     var lat = position.latitude;
@@ -68,47 +77,56 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(),
-        bottomNavigationBar: BottomAppBar(
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            Expanded(
-                child: MaterialButton(
-                    child: Icon(
-                      Icons.home_rounded,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    onPressed: () async {})),
-            // VerticalDividerWidget(),
-            Expanded(
-                child: MaterialButton(
-                    child: Icon(
-                      Icons.save_rounded,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    onPressed: () async {}))
-          ]),
-          color: Colors.blue,
-        ),
+        bottomNavigationBar: BottomNavigationBar(),
         drawer: NavigationDrawer(),
         body: SingleChildScrollView(
             child: Container(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              //  dropdownmenu(),
-
-              forms(),
-
-              submitbutton()
-            ],
+            children: [forms(), submitbutton()],
           ),
           margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
-        )));
+        )
+        )
+        );
+  }
+
+  Widget BottomNavigationBar() {
+    return BottomAppBar(
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Expanded(
+            child: MaterialButton(
+                child: Icon(
+                  Icons.home_rounded,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                onPressed: () async {})),
+        // VerticalDividerWidget(),
+        Expanded(
+            child: MaterialButton(
+                child: Icon(
+                  Icons.save_rounded,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                onPressed: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const outputpage()));
+                }))
+      ]),
+      color: Colors.blue,
+    );
   }
 
   Widget buildMenuitem({required String text, VoidCallback? onClicked}) {
@@ -146,12 +164,12 @@ class _MyAppState extends State<MyApp> {
             //    onTap: (){
             //   },
             //    );
-            final item = items[index];
+            //final item = items[index];
             return buildMenuitem(
                 text: items[index],
                 onClicked: () {
                   setState(() {
-                    value = item;
+                    value = items[index];
                   });
                   Navigator.pop(context);
                 });
@@ -243,9 +261,14 @@ class _MyAppState extends State<MyApp> {
       height: 60,
       width: 150,
       child: MaterialButton(
-        onPressed: () async {},
+        onPressed: () async {
+          /*for (var i = 0; i < Textcontroller.length; i++) {
+            print(Textcontroller[i].text);
+          }*/
+          putdata();
+        },
         color: Colors.blue,
-        textColor: Colors.white,
+        textColor: Color.fromARGB(255, 8, 7, 7),
         child: const Icon(
           Icons.add,
           size: 42,
@@ -256,26 +279,47 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+Widget dateinput(){
+  
+  return SizedBox( 
+    height: 100,
+  child:CupertinoDatePicker(
+    minimumYear: 2015,
+    maximumYear: DateTime.now().year,
+    initialDateTime: dateTime,
+    mode: CupertinoDatePickerMode.date,
+    onDateTimeChanged: (dateTime)=>
+  setState((() => this.dateTime=dateTime))
+    )
+    );
+}
+
   Widget forms() {
     return FutureBuilder(
         future: ReadJsonData(),
         builder: (context, data) {
-          var item = data.data as List<datatype>;
+          item = data.data as List<datatype>;
           var count;
-
-          var i = item.indexWhere((element) => element.item == value);
+          Textcontroller.clear();
+          var i = item.indexWhere((element) => element.intitule == value);
           if (i != -1) {
             count = item[i].subitems?.length;
 
+            setcontrollers(count);
             return ListView.builder(
                 itemCount: count,
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
                   if (item[i].subitems![index].intitule.toString() == 'GPS')
                     return gpsinput();
-                  else
+                  else {
+                    if(item[i].subitems![index].intitule.toString()=='Date')
+                    return dateinput();
+                    else
                     return inputform(
-                        item[i].subitems![index].intitule.toString());
+                        item[i].subitems![index].intitule.toString(),
+                        Textcontroller[index]);
+                  }
                 });
           } else {
             return Container();
@@ -290,6 +334,52 @@ class _MyAppState extends State<MyApp> {
 
     return list.map((e) => datatype.fromJson(e)).toList();
   }
+
+  void setcontrollers(int count) {
+    for (var i = 0; i < count; i++) {
+      Textcontroller.add(TextEditingController());
+    }
+  }
+
+   @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
+    // dispose textEditingControllers to prevent memory leaks
+    for (TextEditingController textEditingController in Textcontroller) {
+      textEditingController.dispose();
+    }
+  }
+  void putdata() {
+    final datevalue= DateFormat('dd/MM/yyyy').format(dateTime);
+    id=id+1;
+    var j = item.indexWhere((element) => element.intitule == value);
+    Map<String, dynamic> json = {
+      "Type": value,
+    };
+    for (var i = 0; i < item[j].subitems!.length; i++) {
+      if (item[j].subitems![i].intitule == 'GPS') {
+        json['GPS'] = {
+          'LAT': locationlat.text,
+          'LONG': locationlong.text,
+          'LAL': locationalt.text
+        };
+      } else {
+        if(item[j].subitems![i].intitule=='Date'){
+        json['Date']=datevalue;}
+        else{
+        json[item[j].subitems![i].intitule.toString()] = Textcontroller[i].text;
+        }
+      }
+    }
+    
+    final data = datalist()
+    ..CaptData =jsonEncode(json)
+    ..id=id;
+    final box =Boxes.getdata();
+    box.add(data);
+  }
+ 
 }
 
 // class VerticalDividerWidget extends StatelessWidget {

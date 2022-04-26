@@ -1,6 +1,6 @@
 [{
     "ITEM": "PANEL_HUMID",
-    "INTITULE": "Données Humidité",
+    "INTITULE": "Humidité",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -39,7 +39,7 @@
 },
 {
     "ITEM": "PANEL_AZOTE",
-    "INTITULE": "Données Azote",
+    "INTITULE": "Azote",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -76,7 +76,7 @@
 },
 {
     "ITEM": "PANEL_PHOSPHATE",
-    "INTITULE": "Données Phosphate",
+    "INTITULE": "Phosphate",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
