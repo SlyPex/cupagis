@@ -168,6 +168,7 @@ var hello;
             return buildMenuitem(
                 text: items[index],
                 onClicked: () {
+                  Textcontroller.clear();
                   setState(() {
                     value = items[index];
                   });
@@ -266,6 +267,7 @@ var hello;
             print(Textcontroller[i].text);
           }*/
           putdata();
+          Textcontroller.clear();
         },
         color: Colors.blue,
         textColor: Color.fromARGB(255, 8, 7, 7),
@@ -300,7 +302,7 @@ Widget dateinput(){
         builder: (context, data) {
           item = data.data as List<datatype>;
           var count;
-          Textcontroller.clear();
+          
           var i = item.indexWhere((element) => element.intitule == value);
           if (i != -1) {
             count = item[i].subitems?.length;
@@ -362,7 +364,7 @@ Widget dateinput(){
         json['GPS'] = {
           'LAT': locationlat.text,
           'LONG': locationlong.text,
-          'LAL': locationalt.text
+          'ALT': locationalt.text
         };
       } else {
         if(item[j].subitems![i].intitule=='Date'){
@@ -371,6 +373,7 @@ Widget dateinput(){
         json[item[j].subitems![i].intitule.toString()] = Textcontroller[i].text;
         }
       }
+      
     }
     
     final data = datalist()
