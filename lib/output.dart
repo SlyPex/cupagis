@@ -19,7 +19,7 @@ class _outputpageState extends State<outputpage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(),
-        bottomNavigationBar: BottomNavigationBar(),
+       
         body: ValueListenableBuilder<Box<datalist>>(
           valueListenable: Boxes.getdata().listenable(),
           builder: (context, box, _) {
