@@ -1,16 +1,15 @@
-//import 'dart:convert';
-//import 'package:cupajis/datatypes.dart';
+
 import 'package:cupajis/input.dart';
-//import 'package:intl/intl.dart';
 import 'package:cupajis/output.dart';
-//import 'package:cupajis/userinput.dart';
-//import 'package:flutter/cupertino.dart';
+import 'package:cupajis/pages/SignIn.dart';
+import 'package:cupajis/pages/SignUp.dart';
 import 'package:flutter/material.dart';
-//import 'package:geolocator/geolocator.dart';
-//import 'package:cupajis/databox.dart';
+import 'package:cupajis/databox.dart';
+import 'package:cupajis/base.dart';
+import 'package:http/http.dart' as http;
 import 'package:cupajis/hivemodel/datalist.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-//import 'package:flutter/services.dart' as rootBundle;
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +17,7 @@ Future<void> main() async {
   Hive.registerAdapter(datalistAdapter());
   await Hive.openBox<datalist>('datas');
   runApp(
-    const MaterialApp(
+     MaterialApp(
       title: 'Cupajis',
       debugShowCheckedModeBanner: false,
       home: MyApp(),
@@ -40,13 +39,12 @@ int _selecteditem=0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: NavigationBar(),
-        body: pages[_selecteditem]
-        /*PageView(
-          children: [
-            Input(),outputpage()
-            ],
-        )*/
+       // bottomNavigationBar: NavigationBar(),
+      
+        body: Base()
+        
+        
+        
         );
   }
 
@@ -70,6 +68,7 @@ int _selecteditem=0;
     
    
   }
+  
      @override
   void dispose() {
     Hive.close();

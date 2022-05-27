@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:cupajis/databox.dart';
 import 'package:cupajis/hivemodel/datalist.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:hive_flutter/hive_flutter.dart';
 
 class outputpage extends StatefulWidget {
@@ -13,19 +13,51 @@ class outputpage extends StatefulWidget {
 }
 
 class _outputpageState extends State<outputpage> {
-  final datas = Boxes.getdata().values.cast<datalist>();
-
+  var datas =Boxes.getdata().values.cast<datalist>();
+  var keys=Boxes.getdata().keys.cast<int>();
+  String url="http://192.168.43.149:5000";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-       
-        body: ValueListenableBuilder<Box<datalist>>(
-          valueListenable: Boxes.getdata().listenable(),
-          builder: (context, box, _) {
-            return listdata();
-          },
-        ));
+        appBar:  AppBar(
+          actions: [
+            Padding(
+      padding: EdgeInsets.only(right: 20.0),
+      child: GestureDetector(
+        onTap: () {
+          getdatafromserver();
+        },
+        child: Icon(
+          Icons.refresh,
+          size: 26.0,
+        ),
+      )
+    ),
+          ],
+        ),
+        body: //Column(
+        // children: [
+           ValueListenableBuilder<Box<datalist>>(
+             valueListenable: Boxes.getdata().listenable(),
+             builder: (context, box, _) {
+               return listdata();
+             },
+           ),
+          // Text(thisdata.toString()),
+            //TextButton(onPressed: () async{
+             
+             //final response= await http.get(Uri.parse('https://192.168.43.149:5000'));
+            // var maindata=response.toString();
+           
+            //senddatatoserver();
+            //getdatafromserver();
+            //print("data sended");
+
+  
+          // }, child: Text('getdata'),)
+        //  ],
+        //)
+        );
   }
 
   Widget listdata() {
@@ -40,11 +72,11 @@ class _outputpageState extends State<outputpage> {
               tilePadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               title: Text(
                 //jsonDecode(datas.toList()[index].CaptData) ,
-                mapdata["Type"],
+                data.id.toString()+': '+mapdata["Type"].toString(),
                 maxLines: 4,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              subtitle: Text(mapdata["Date"]),
+              subtitle: Text(mapdata["Date"].toString()),
               trailing: mapdata.containsKey(mapdata['Type'])? Text(
                 mapdata[mapdata['Type']].toString(),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -73,32 +105,7 @@ class _outputpageState extends State<outputpage> {
         });
   }
 
-  Widget BottomNavigationBar() {
-    return BottomAppBar(
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Expanded(
-            child: MaterialButton(
-                child: Icon(
-                  Icons.home_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                onPressed: () async {
-                  Navigator.pop(context);
-                })),
-        // VerticalDividerWidget(),
-        Expanded(
-            child: MaterialButton(
-                child: Icon(
-                  Icons.save_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                onPressed: () async {}))
-      ]),
-      color: Colors.blue,
-    );
-  }
+
 
   Widget button() {
     return MaterialButton(
@@ -116,6 +123,22 @@ class _outputpageState extends State<outputpage> {
     );
   }
 
+Future<void> getdatafromserver() async {
+  final response= await http.get(Uri.parse(url));
+  var serverdata=jsonDecode(response.body) as List;
+    
+    for (var i = 0; i < serverdata.length; i++) {
+      
+      final data=datalist()
+      ..CaptData=jsonEncode(serverdata[i]['data'])
+      ..id=serverdata[i]['id'];
+      final box=Boxes.getdata();
+      box.add(data);
+    }
+  
+}
+
+
   Widget buildbuttons(BuildContext context, datalist data) {
     return Row(
       children: [
@@ -123,10 +146,31 @@ class _outputpageState extends State<outputpage> {
           child: TextButton.icon(
             label: Text('Delete'),
             icon: Icon(Icons.delete),
-            onPressed: () => deletedata(data),
+            onPressed: () => showdialog(data),
           ),
         )
       ],
+    );
+  }
+
+  Future showdialog(datalist data){
+    return showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("do you want to delete this item"),
+          actions: [
+            
+             TextButton(onPressed: (){
+              Navigator.pop(context);
+            }, child: Text("CANCEL")),
+TextButton(onPressed: (){
+              deletedata(data);
+              Navigator.pop(context);
+            }, child: Text("DELETE")),
+          ],
+        );
+      }
     );
   }
 

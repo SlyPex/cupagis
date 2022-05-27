@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cupajis/databox.dart';
+//import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:http/http.dart' as http;
 import 'package:cupajis/hivemodel/datalist.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart' as rootBundle;
@@ -31,10 +33,16 @@ class _InputState extends State<Input> {
     "Azote",
     "Phosphate",
     "Information Libre",
-    "Humidité Diviner"
+    "Humidité Diviner",
+    "Indice de végétation NDVI",
+    "Radio Spectromètre",
+    "Capteur NPK",
+    "Capteur Conductivité Eléctrique"
   ];
   List<datatype> item = [];
+  Future<List<datatype>>? jsondata;
 var hello;
+ bool hasinternet=false;
   String? value;
   late String latiude;
   late String longtitude;
@@ -66,6 +74,7 @@ var hello;
   @override
   void initState() {
     super.initState();
+    jsondata=ReadJsonData();
   }
 
   @override
@@ -124,7 +133,7 @@ var hello;
             color: Colors.transparent,
             child: RotatedBox(
                 quarterTurns: 1,
-                child: ListTile(title: Text(text), onTap: onClicked))));
+                child: ListTile(title: Text(text),textColor: Colors.white, onTap: onClicked,))));
   }
 
   Widget NavigationDrawer() {
@@ -147,16 +156,13 @@ var hello;
           shrinkWrap: true,
           itemCount: items.length,
           itemBuilder: (context, index) {
-            //   return ListTile(
-            //   title: Text(items[index]),
-            //    onTap: (){
-            //   },
-            //    );
-            //final item = items[index];
-            return buildMenuitem(
+            return  buildMenuitem(
                 text: items[index],
                 onClicked: () {
                   Textcontroller.clear();
+                  locationalt.clear();
+                  locationlat.clear();
+                  locationlong.clear();
                   setState(() {
                     value = items[index];
                   });
@@ -255,6 +261,7 @@ var hello;
             print(Textcontroller[i].text);
           }*/
           putdata();
+
           Textcontroller.clear();
           showtoast();
         },
@@ -288,25 +295,9 @@ Widget dateinput(){
     );
 }
 
-Widget navdraw(){
-  return Stack(
-    children: [
-      Container(
-        margin: EdgeInsets.all(8.0),
-        height: MediaQuery.of(context).size.height,
-        width: 101.0,
-        decoration: BoxDecoration(
-          color: Color(0xff332A7C),
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-      )
-    ],
-  );
-}
-
   Widget forms() {
     return FutureBuilder(
-        future: ReadJsonData(),
+        future: jsondata,
         builder: (context, data) {
           item = data.data as List<datatype>;
           var count;
@@ -350,16 +341,16 @@ Widget navdraw(){
     }
   }
 
-   @override
-  void dispose() {
+  // @override
+  //void dispose() {
     //Hive.close();
-    super.dispose();
+    //super.dispose();
     // dispose textEditingControllers to prevent memory leaks
-    for (TextEditingController textEditingController in Textcontroller) {
-      textEditingController.dispose();
-    }
-  }
-  void putdata() {
+   // for (TextEditingController textEditingController in Textcontroller) {
+   //   textEditingController.dispose();
+  //  }
+ // }
+  Future<void> putdata() async {
     final datevalue= DateFormat('dd/MM/yyyy').format(dateTime);
     id=id+1;
     var j = item.indexWhere((element) => element.intitule == value);
@@ -382,17 +373,32 @@ Widget navdraw(){
       }
       
     }
-    
-    final data = datalist()
-    ..CaptData =jsonEncode(json)
-    ..id=id;
-    final box =Boxes.getdata();
-    box.add(data);
+   // hasinternet = await InternetConnectionChecker().hasConnection;
+   // if(hasinternet){
+   //   print('has connection');
+   // }else{
+   //   print('does not have connection');
+   // }
+   //final data = datalist()
+   //..CaptData =jsonEncode(json)
+   //..id=0;
+   //final box =Boxes.getdata();
+   //box.add(data);
+   
+   // senddatatoserver(json);
   }
- 
+  
+  
+
+
+String url="http://192.168.43.149:5000";
+  Future<void> senddatatoserver(Map<String, dynamic> json) async{
+    http.Response response=await http.post(Uri.parse(url),body: jsonEncode({"data":json}));
+  }  
+  
   void showtoast()=>Fluttertoast.showToast(
     msg: 'data saved',
     fontSize: 16,
     );
-
+  
 }
