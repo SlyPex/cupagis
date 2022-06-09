@@ -1,14 +1,13 @@
+import 'dart:convert';
 
-import 'package:cupajis/input.dart';
-import 'package:cupajis/output.dart';
 import 'package:cupajis/pages/SignIn.dart';
-import 'package:cupajis/pages/SignUp.dart';
 import 'package:flutter/material.dart';
-import 'package:cupajis/databox.dart';
 import 'package:cupajis/base.dart';
 import 'package:http/http.dart' as http;
 import 'package:cupajis/hivemodel/datalist.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'httpservice.dart';
 
 
 Future<void> main() async {
@@ -24,7 +23,7 @@ Future<void> main() async {
     ),
   );
 }
-
+enum authstatus {online,offline}
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -33,40 +32,43 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+static authstatus status=authstatus.offline;
 
-var pages=[Input(),outputpage()];
-int _selecteditem=0;
+@override
+void initState(){
+  super.initState();  
+  userstate();
+}
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-       // bottomNavigationBar: NavigationBar(),
-      
-        body: Base()
-        
-        
-        
-        );
+    
+   //return Scaffold(
+   //  // bottomNavigationBar: NavigationBar(),
+   // 
+   //   body:isconnected ?  Base(): MyLogin()
+   //   );
+   Widget retval;
+   switch(status){
+     case authstatus.offline:
+     retval=MyLogin();
+     break;
+     case authstatus.online:
+     retval=Base();
+     break;
+   }
+   return retval;
   }
 
-  Widget NavigationBar() {
-    return BottomNavigationBar(
-      items: [BottomNavigationBarItem(
-        icon: Icon(Icons.library_add_rounded, size: 40,),
-        label: 'home'
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.format_list_bulleted_rounded, size: 40,),
-          label: 'save' 
-        )],
-        currentIndex: _selecteditem,
-        onTap: (index){
-          setState(() {
-            _selecteditem=index;
-          });
-        },
-      );
-    
-   
+
+  Future<void> userstate()async{
+    http.Response response=await Session().checklogin();
+    print(response.body);
+    if(response.body=="user is online"){
+      setState(() {
+        status=authstatus.online;
+      });
+      
+    }
   }
   
      @override
@@ -77,13 +79,4 @@ int _selecteditem=0;
   }
 }
 
-// class VerticalDividerWidget extends StatelessWidget {
-// @override
-// Widget build(BuildContext context) {
-// return Container(
-// height: 48,
-// width: 2,
-// color: Colors.white,
-// );
-// }
-// }
+

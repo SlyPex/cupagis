@@ -107,12 +107,13 @@ class Subitem {
     };
 }
 
-enum UiType { REAL, DATE, GPS }
+enum UiType { REAL, DATE, GPS,TEXT}
 
 final uiTypeValues = EnumValues({
     "DATE": UiType.DATE,
     "GPS": UiType.GPS,
-    "REAL": UiType.REAL
+    "REAL": UiType.REAL,
+    "TXT": UiType.TEXT,
 });
 
 class EnumValues<T> {
@@ -122,6 +123,7 @@ class EnumValues<T> {
     EnumValues(this.map);
 
     Map<T, String> get reverse {
+        // ignore: unnecessary_null_comparison
         if (reverseMap == null) {
             reverseMap = map.map((k, v) => new MapEntry(v, k));
         }

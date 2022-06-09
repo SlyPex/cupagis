@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class inputform extends StatelessWidget {
   String? label;
   TextEditingController val;
+  TextInputType type;
  
-   inputform(this.label,this.val, { Key? key}) : super(key: key);
+   inputform(this.label,this.val,this.type, { Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class inputform extends StatelessWidget {
                         labelText: label, border: OutlineInputBorder()),
                     toolbarOptions: ToolbarOptions(
                         copy: true, cut: true, paste: false, selectAll: true),
-                    keyboardType: TextInputType.number,
+                    keyboardType: type,
                     controller: val,
                   ),
                   margin: const EdgeInsets.fromLTRB(0, 22, 0, 22));

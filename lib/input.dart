@@ -7,8 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cupajis/databox.dart';
-//import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:http/http.dart' as http;
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:cupajis/httpservice.dart';
 import 'package:cupajis/hivemodel/datalist.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart' as rootBundle;
@@ -16,7 +16,6 @@ import 'package:flutter/services.dart' as rootBundle;
 
 class Input extends StatefulWidget {
   const Input({Key? key}) : super(key: key);
-
   @override
   State<Input> createState() => _InputState();
 }
@@ -26,7 +25,7 @@ class _InputState extends State<Input> {
   TextEditingController locationlong = TextEditingController();
   TextEditingController locationalt = TextEditingController();
   var Textcontroller = [];
- int id=0;
+ 
  DateTime dateTime=DateTime.now();
   final items = [
     "Humidité",
@@ -40,8 +39,6 @@ class _InputState extends State<Input> {
     "Capteur Conductivité Eléctrique"
   ];
   List<datatype> item = [];
-  Future<List<datatype>>? jsondata;
-var hello;
  bool hasinternet=false;
   String? value;
   late String latiude;
@@ -74,13 +71,14 @@ var hello;
   @override
   void initState() {
     super.initState();
-    jsondata=ReadJsonData();
+   
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+      
+        
        // bottomNavigationBar: BottomNavigationBar(),
         drawer: NavigationDrawer(),
         body: SingleChildScrollView(
@@ -261,9 +259,9 @@ var hello;
             print(Textcontroller[i].text);
           }*/
           putdata();
-
-          Textcontroller.clear();
-          showtoast();
+          
+          
+          //showtoast();
         },
         color: Colors.blue,
         textColor: Color.fromARGB(255, 8, 7, 7),
@@ -297,28 +295,37 @@ Widget dateinput(){
 
   Widget forms() {
     return FutureBuilder(
-        future: jsondata,
+        future:  ReadJsonData(),
         builder: (context, data) {
           item = data.data as List<datatype>;
           var count;
-          
           var i = item.indexWhere((element) => element.intitule == value);
           if (i != -1) {
             count = item[i].subitems?.length;
             setcontrollers(count);
             return ListView.builder(
+              primary: false,
                 itemCount: count,
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
-                  if (item[i].subitems![index].intitule.toString() == 'GPS')
+                  if (item[i].subitems![index].uiType == UiType.GPS)
                     return gpsinput();
                   else {
-                    if(item[i].subitems![index].intitule.toString()=='Date')
+                    if(item[i].subitems![index].uiType==UiType.DATE)
                     return dateinput();
-                    else
-                    return inputform(
+                    else{
+                      if(item[i].subitems![index].uiType==UiType.TEXT)
+                      return inputform(
                         item[i].subitems![index].intitule.toString(),
-                        Textcontroller[index]);
+                        Textcontroller[index],
+                        TextInputType.text);
+                        else
+                        return inputform(
+                        item[i].subitems![index].intitule.toString(),
+                        Textcontroller[index],
+                        TextInputType.number);
+                    }
+                    
                   }
                 });
           } else {
@@ -341,18 +348,9 @@ Widget dateinput(){
     }
   }
 
-  // @override
-  //void dispose() {
-    //Hive.close();
-    //super.dispose();
-    // dispose textEditingControllers to prevent memory leaks
-   // for (TextEditingController textEditingController in Textcontroller) {
-   //   textEditingController.dispose();
-  //  }
- // }
+
   Future<void> putdata() async {
     final datevalue= DateFormat('dd/MM/yyyy').format(dateTime);
-    id=id+1;
     var j = item.indexWhere((element) => element.intitule == value);
     Map<String, dynamic> json = {
       "Type": value,
@@ -373,19 +371,26 @@ Widget dateinput(){
       }
       
     }
-   // hasinternet = await InternetConnectionChecker().hasConnection;
-   // if(hasinternet){
-   //   print('has connection');
-   // }else{
-   //   print('does not have connection');
-   // }
-   //final data = datalist()
-   //..CaptData =jsonEncode(json)
-   //..id=0;
-   //final box =Boxes.getdata();
-   //box.add(data);
+    
    
-   // senddatatoserver(json);
+    hasinternet = await InternetConnectionChecker().hasConnection;
+    if(hasinternet){
+      print('has connection');
+      senddatatoserver(json);
+    }else{
+      final data = datalist()
+   ..CaptData =jsonEncode(json)
+   ..id=0;
+   final box =Boxes.getdata();
+   
+   showtoast("saved locally");
+    }
+    setState(() {
+          Textcontroller.clear();
+          locationalt.clear();
+          locationlat.clear();
+          locationlong.clear();  
+          });
   }
   
   
@@ -393,11 +398,12 @@ Widget dateinput(){
 
 String url="http://192.168.43.149:5000";
   Future<void> senddatatoserver(Map<String, dynamic> json) async{
-    http.Response response=await http.post(Uri.parse(url),body: jsonEncode({"data":json}));
+   var response= await Session().post(url,jsonEncode({"data":json}));
+    showtoast(response.body.toString());
   }  
   
-  void showtoast()=>Fluttertoast.showToast(
-    msg: 'data saved',
+  void showtoast(String msg)=>Fluttertoast.showToast(
+    msg: msg,
     fontSize: 16,
     );
   

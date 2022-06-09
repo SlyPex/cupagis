@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:cupajis/databox.dart';
-import 'package:cupajis/hivemodel/datalist.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'httpservice.dart';
+import 'databox.dart';
+import 'hivemodel/datalist.dart';
 
 class outputpage extends StatefulWidget {
   const outputpage({Key? key}) : super(key: key);
@@ -13,19 +14,38 @@ class outputpage extends StatefulWidget {
 }
 
 class _outputpageState extends State<outputpage> {
-  var datas =Boxes.getdata().values.cast<datalist>();
-  var keys=Boxes.getdata().keys.cast<int>();
+  var datas =Boxes.getdata().values.toList().where((element) => element.id==0).cast<datalist>();
+  //var keys=Boxes.getdata().keys.cast<int>();
+  List serverdata=[];
+  final ValueNotifier datanotifier=ValueNotifier([]);
   String url="http://192.168.43.149:5000";
+  @override
+  void initState(){
+    super.initState();
+  // for(var i in datas){
+  //  hivedata.addAll(jsonDecode(i.CaptData)); 
+  // }
+    
+     //getdatafromserver();
+  }
+  @override
+  void didChangeDependencies(){
+    super.didChangeDependencies();
+    getdatafromserver();
+    datanotifier.value=datas;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar:  AppBar(
+       /* appBar:  AppBar(
           actions: [
             Padding(
       padding: EdgeInsets.only(right: 20.0),
       child: GestureDetector(
         onTap: () {
-          getdatafromserver();
+        //var data=Boxes.getdata();
+        //data.clear();
+          getdatafromserver();  
         },
         child: Icon(
           Icons.refresh,
@@ -33,84 +53,95 @@ class _outputpageState extends State<outputpage> {
         ),
       )
     ),
-          ],
+    Padding(
+      padding: EdgeInsets.only(right: 20.0),
+      child: GestureDetector(
+        onTap: () {
+       // var data=Boxes.getdata();
+       // data.clear();
+       //     
+        },
+        child: Icon(
+          Icons.delete,
+          size: 26.0,
         ),
+      )
+    ),
+          ],
+        ),*/
         body: //Column(
         // children: [
-           ValueListenableBuilder<Box<datalist>>(
-             valueListenable: Boxes.getdata().listenable(),
-             builder: (context, box, _) {
-               return listdata();
-             },
-           ),
-          // Text(thisdata.toString()),
-            //TextButton(onPressed: () async{
-             
-             //final response= await http.get(Uri.parse('https://192.168.43.149:5000'));
-            // var maindata=response.toString();
            
-            //senddatatoserver();
-            //getdatafromserver();
-            //print("data sended");
-
-  
-          // }, child: Text('getdata'),)
-        //  ],
-        //)
+           ValueListenableBuilder(
+               valueListenable:  datanotifier,
+               builder: (context, box, _) {
+                 return listdata();
+               },
+             ),
+           
         );
   }
 
   Widget listdata() {
     return ListView.builder(
-        itemCount: datas.length,
-        itemBuilder: (BuildContext context, index) {
-          final data = datas.toList()[index];
-          Map<String, dynamic> mapdata = jsonDecode(data.CaptData);
-          return Card(
-            color: Colors.white,
-            child: ExpansionTile(
-              tilePadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              title: Text(
-                //jsonDecode(datas.toList()[index].CaptData) ,
-                data.id.toString()+': '+mapdata["Type"].toString(),
-                maxLines: 4,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+       // reverse: true,
+          itemCount: serverdata.length+datas.length,
+          itemBuilder: (BuildContext context, index) {
+            Map data={};
+              if(index<serverdata.length){
+                data= serverdata[index]['data'];
+              }else{
+                data=jsonDecode(datas.toList()[index-serverdata.length].CaptData);
+               
+              }
+           // print(datas.values.toList()[index]);
+            final id=serverdata[index]['id'];
+            return Card(
+              color: Colors.white,
+              child: ExpansionTile(
+                tilePadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                title: Text(
+                  //jsonDecode(datas.toList()[index].CaptData) ,
+                  id.toString()+': '+data["Type"].toString(),
+                  maxLines: 4,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                subtitle: Text(data["Date"].toString()),
+                trailing: data.containsKey('GPS')
+                      ? Text('X: '+data['GPS']['LAT'] +
+                          "\nY: " +
+                          data['GPS']['LONG'] +
+                          "\nZ: " +
+                          data['GPS']['ALT'])
+                      : null,
+                children: [
+                  //Text((data.keys+": ")+data.values.toList().iterator.toString()),
+                  
+    
+                 
+                   //if()
+                  // data.keys.toList()!="GPS" || data.keys.toList()!="Date" ?
+                   for(var i=0;i<data.length;i++)
+                   (data.keys.toList()[i]!='Date' && data.keys.toList()[i]!='Type' && data.keys.toList()[i]!='GPS')?
+                   Text(data.keys.toList()[i].toString() +
+                       ': ' +
+                       data.values.toList()[i].toString()):Container(),
+                 
+                         
+                        
+                  buildbuttons(context, id)
+                  
+                ],
               ),
-              subtitle: Text(mapdata["Date"].toString()),
-              trailing: mapdata.containsKey(mapdata['Type'])? Text(
-                mapdata[mapdata['Type']].toString(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ):null,
-              children: [
-                //Text((mapdata.keys+": ")+mapdata.values.toList().iterator.toString()),
-                mapdata.containsKey('GPS')
-                    ? Text(mapdata['GPS']['LAT'] +
-                        " " +
-                        mapdata['GPS']['LONG'] +
-                        " " +
-                        mapdata['GPS']['ALT'])
-                    : Container(),
-
-                for (var i = 1;
-                    i < mapdata.keys.toList().indexWhere((element) => element == 'Date');
-                    i++)
-                  Text(mapdata.keys.toList()[i].toString() +
-                      ': ' +
-                      mapdata.values.toList()[i].toString()),
-                buildbuttons(context, data)
-                // buildButtons(context, transaction),
-              ],
-            ),
-          );
-        });
+            );
+          });
   }
-
 
 
   Widget button() {
     return MaterialButton(
       onPressed: (() {
-        deletedata(datas.toList()[3]);
+        
       }),
       color: Colors.blue,
       textColor: Color.fromARGB(255, 8, 7, 7),
@@ -124,36 +155,28 @@ class _outputpageState extends State<outputpage> {
   }
 
 Future<void> getdatafromserver() async {
-  final response= await http.get(Uri.parse(url));
-  var serverdata=jsonDecode(response.body) as List;
-    
-    for (var i = 0; i < serverdata.length; i++) {
-      
-      final data=datalist()
-      ..CaptData=jsonEncode(serverdata[i]['data'])
-      ..id=serverdata[i]['id'];
-      final box=Boxes.getdata();
-      box.add(data);
-    }
+  final response= await Session().get(url);
+   serverdata=jsonDecode(response.body) as List;
+    datanotifier.value=serverdata;
   
 }
 
 
-  Widget buildbuttons(BuildContext context, datalist data) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextButton.icon(
-            label: Text('Delete'),
-            icon: Icon(Icons.delete),
-            onPressed: () => showdialog(data),
-          ),
-        )
-      ],
-    );
-  }
+ Widget buildbuttons(BuildContext context, var data) {
+   return Row(
+     children: [
+       Expanded(
+         child: TextButton.icon(
+           label: Text('Delete'),
+           icon: Icon(Icons.delete),
+           onPressed: () =>showdialog(data),
+         ),
+       )
+     ],
+   );
+ }
 
-  Future showdialog(datalist data){
+  Future showdialog(var data){
     return showDialog(
       context: context,
       builder: (BuildContext context){
@@ -174,7 +197,11 @@ TextButton(onPressed: (){
     );
   }
 
-  void deletedata(datalist data) {
-    data.delete();
+  void deletedata(var data) async{
+    if(data!=0){
+      http.Response response=await Session().delete(url,jsonEncode(data));
+      print(response.body);
+    }
+    getdatafromserver();
   }
 }

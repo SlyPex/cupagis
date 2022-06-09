@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:cupajis/pages/SignIn.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
@@ -8,6 +13,9 @@ class MyRegister extends StatefulWidget {
 }
 
 class _MyRegisterState extends State<MyRegister> {
+  String username='';
+  String email='';
+  String password='';
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,6 +42,9 @@ class _MyRegisterState extends State<MyRegister> {
                         children: [
                           
                           TextField(
+                            onChanged: (value) {
+                              username=value;
+                            },
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                                 enabledBorder: OutlineInputBorder(
@@ -58,6 +69,11 @@ class _MyRegisterState extends State<MyRegister> {
                             height: 30,
                           ),
                           TextField(
+                            onChanged: ((value) {
+                              setState(() {
+                                email=value;
+                              });
+                            }),
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                                 enabledBorder: OutlineInputBorder(
@@ -82,6 +98,11 @@ class _MyRegisterState extends State<MyRegister> {
                             height: 30,
                           ),
                           TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                password=value;
+                              });
+                            },
                             style: TextStyle(color: Colors.black),
                             obscureText: true,
                             decoration: InputDecoration(
@@ -121,7 +142,12 @@ class _MyRegisterState extends State<MyRegister> {
                                 backgroundColor: Color(0xff4c505b),
                                 child: IconButton(
                                     color: Colors.white,
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      registeruser();
+                                      print('name :'+username);
+                                      print('email:'+email);
+                                      print('password:'+password);
+                                    },
                                     icon: Icon(
                                       Icons.arrow_forward,
                                     )),
@@ -136,14 +162,14 @@ class _MyRegisterState extends State<MyRegister> {
                             children: [
                               TextButton(
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: ((context) => MyRegister())));
+                                  Navigator.push(context, MaterialPageRoute(builder: ((context) => MyLogin())));
                                 },
                                 child: Text(
                                   'Sign In',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       decoration: TextDecoration.underline,
-                                      color: Colors.white,
+                                      color: Color(0xff4c505b),
                                       fontSize: 18),
                                 ),
                                 style: ButtonStyle(),
@@ -162,4 +188,19 @@ class _MyRegisterState extends State<MyRegister> {
       ),
     );
   }
+  String url="http://192.168.43.149:5000/register";
+  Future<void> registeruser() async{
+    if((email!="")||(username!="")||(password!="")){
+      http.Response response=await http.post(Uri.parse(url),body: jsonEncode({"username":username,"email":email,"password":password}));
+      if(response.statusCode==200){
+        showtoast(jsonDecode(response.body));
+      }else{
+        print(response.statusCode.toString());
+      }
+    }
+  }
+   void showtoast(String msg)=>Fluttertoast.showToast(
+    msg: msg,
+    fontSize: 16,
+    );
 }
