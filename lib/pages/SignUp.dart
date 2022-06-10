@@ -188,14 +188,20 @@ class _MyRegisterState extends State<MyRegister> {
       ),
     );
   }
+void showerror(String msg)=>Fluttertoast.showToast(
+  msg: msg,
+  toastLength: Toast.LENGTH_LONG,
+  backgroundColor: Colors.red
+);
+
   String url="http://192.168.43.149:5000/register";
   Future<void> registeruser() async{
     if((email!="")||(username!="")||(password!="")){
       http.Response response=await http.post(Uri.parse(url),body: jsonEncode({"username":username,"email":email,"password":password}));
-      if(response.statusCode==200){
+      if(response.body=="register success"){
         showtoast(jsonDecode(response.body));
       }else{
-        print(response.statusCode.toString());
+        showerror(response.body);
       }
     }
   }

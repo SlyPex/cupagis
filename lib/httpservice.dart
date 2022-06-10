@@ -16,10 +16,12 @@ Future<http.Response> checklogin()async{
 }
  Future<http.Response> login( dynamic data) async {
     http.Response response = await http.post(Uri.parse(loginurl), body: data);
+    if(response.body=="login success"){
     var header=response.headers['api-key'];
     auth=header!;
     prefs= await SharedPreferences.getInstance();
-    prefs.setString('api_key', auth);
+    prefs.setString('api_key', auth);}
+    
     return response;
   }
 

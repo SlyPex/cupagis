@@ -13,6 +13,7 @@ class MyLogin extends StatefulWidget {
 }
 
 class _MyLoginState extends State<MyLogin> {
+   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String email = "";
   String password = "";
   @override
@@ -94,6 +95,7 @@ class _MyLoginState extends State<MyLogin> {
                                     },
                                     icon: Icon(
                                       Icons.arrow_forward,
+                                      color: Colors.white,
                                     )),
                               )
                             ],
@@ -121,16 +123,7 @@ class _MyLoginState extends State<MyLogin> {
                                 ),
                                 style: ButtonStyle(),
                               ),
-                              TextButton(
-                                  onPressed: () {},
-                                  child: Text(
-                                    'Forgot Password',
-                                    style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: Color(0xff4c505b),
-                                      fontSize: 18,
-                                    ),
-                                  )),
+                              
                             ],
                           )
                         ],
@@ -145,36 +138,34 @@ class _MyLoginState extends State<MyLogin> {
       ),
     );
   }
- // String url="http://192.168.43.149:5000/login";
+
+
+
+
   Future <void> login() async{
- //  http.Response response=await http.post(Uri.parse(url),body: jsonEncode({"username":email,"password":password}));
- //if(response.statusCode==200){
- //  print("heeeloo");
- //      print(jsonDecode(response.body));
- //      print("bitch");
- //    }else{
- //      print(response.statusCode.toString());
- //    }
 var response=await Session().login(jsonEncode({"username":email,"password":password}));
-showtoast(response.body);
-//if(response.body=="login success"){
-   Navigator.pushReplacement(
+if(response.body=="login success"){
+   Navigator.pushAndRemoveUntil(
       context,
      MaterialPageRoute(
-   builder: (context) => Base()));
-//}
-//var i=header?.indexOf(';');
-//header=header?.substring(0,i);
+   builder: (context) => Base()),
+   (Route<dynamic> route) => false,);
+   showtoast(response.body);
+   
+}else showerror(response.body);
 
-//print(thisresponse.headers);
-//http.Response response=await http.post(Uri.parse(url),body: jsonEncode({"username":email,"password":password}));
-//print(response.headers);
-//var header=response.headers['set-cookie'];
-//print(header);
-//http.Response postresponse =await http.get(Uri.parse(url), headers: {HttpHeaders.authorizationHeader:header.toString()});
-//print(postresponse.headers);
-//print(postresponse.body);
  }
+
+
+void showerror(String msg)=>Fluttertoast.showToast(
+  msg: msg,
+  toastLength: Toast.LENGTH_LONG,
+  backgroundColor: Colors.red
+);
+
+
+
+
    void showtoast(String msg)=>Fluttertoast.showToast(
     msg: msg,
     fontSize: 16,

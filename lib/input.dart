@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:cupajis/datatypes.dart';
+import 'package:cupajis/pages/SignIn.dart';
+import 'package:cupajis/parameters.dart';
 import 'package:intl/intl.dart';
 import 'package:cupajis/output.dart';
 import 'package:cupajis/userinput.dart';
@@ -71,25 +73,50 @@ class _InputState extends State<Input> {
   @override
   void initState() {
     super.initState();
-   
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       
-        
-       // bottomNavigationBar: BottomNavigationBar(),
+        appBar: AppBar(actions: [
+          Padding(
+          padding: const EdgeInsets.only(right:20.0),
+          child: GestureDetector(
+            onTap: () {
+              logout();
+            },
+             child: Icon(
+          Icons.logout_outlined,
+          size: 26.0,
+        ),
+          ),
+        ),
+          Padding(
+          padding: const EdgeInsets.only(right:20.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>parameter()));
+            },
+             child: Icon(
+          Icons.settings,
+          size: 26.0,
+        ),
+          ),
+        ),
+        ]),
         drawer: NavigationDrawer(),
         body: SingleChildScrollView(
           child:
-            Container(
+            Center(
+              child: Container(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [forms(), submitbutton()],
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [forms(), submitbutton()],
           ),
-          margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
-        )
+          margin:  const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        ),
+            )
         )
         );
   }
@@ -105,7 +132,7 @@ class _InputState extends State<Input> {
                   size: 40,
                 ),
                 onPressed: () async {})),
-        // VerticalDividerWidget(),
+       
         Expanded(
             child: MaterialButton(
                 child: Icon(
@@ -255,13 +282,7 @@ class _InputState extends State<Input> {
       width: 150,
       child: MaterialButton(
         onPressed: () async {
-          /*for (var i = 0; i < Textcontroller.length; i++) {
-            print(Textcontroller[i].text);
-          }*/
-          putdata();
-          
-          
-          //showtoast();
+          putdata();  
         },
         color: Colors.blue,
         textColor: Color.fromARGB(255, 8, 7, 7),
@@ -294,10 +315,12 @@ Widget dateinput(){
 }
 
   Widget forms() {
-    return FutureBuilder(
+    return  FutureBuilder(
         future:  ReadJsonData(),
-        builder: (context, data) {
-          item = data.data as List<datatype>;
+        builder: (context, data)  {
+          if(data.connectionState!=ConnectionState.done)
+          {return SizedBox();};
+          item =  data.data as List<datatype>;
           var count;
           var i = item.indexWhere((element) => element.intitule == value);
           if (i != -1) {
@@ -339,7 +362,7 @@ Widget dateinput(){
         await rootBundle.rootBundle.loadString('jsons/data-types.json');
     final list = jsonDecode(jsondata) as List<dynamic>;
 
-    return list.map((e) => datatype.fromJson(e)).toList();
+    return  list.map((e) => datatype.fromJson(e)).toList();
   }
 
   void setcontrollers(int count) {
@@ -372,19 +395,22 @@ Widget dateinput(){
       
     }
     
-   
+   final data = datalist()
+   ..CaptData =jsonEncode(json)
+   ..id=0;
+   print(data.CaptData);
+   final box =Boxes.getdata();
     hasinternet = await InternetConnectionChecker().hasConnection;
     if(hasinternet){
       print('has connection');
-      senddatatoserver(json);
+     String url="http://192.168.43.149:5000";
+     var response= await Session().post(url,jsonEncode({"data":json}));
+    showtoast(response.body.toString());
+    data.id=int.parse(response.headers['id'].toString()) ;
     }else{
-      final data = datalist()
-   ..CaptData =jsonEncode(json)
-   ..id=0;
-   final box =Boxes.getdata();
-   
    showtoast("saved locally");
     }
+    box.add(data);
     setState(() {
           Textcontroller.clear();
           locationalt.clear();
@@ -392,19 +418,15 @@ Widget dateinput(){
           locationlong.clear();  
           });
   }
-  
-  
-
-
-String url="http://192.168.43.149:5000";
-  Future<void> senddatatoserver(Map<String, dynamic> json) async{
-   var response= await Session().post(url,jsonEncode({"data":json}));
-    showtoast(response.body.toString());
-  }  
+    
   
   void showtoast(String msg)=>Fluttertoast.showToast(
     msg: msg,
     fontSize: 16,
     );
-  
+   void logout() async{
+    var response= await Session().logout();
+    if(response.statusCode==200)
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyLogin()));
+  }
 }
