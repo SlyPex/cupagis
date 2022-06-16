@@ -24,15 +24,8 @@ class _outputpageState extends State<outputpage> {
   @override
   void initState(){
     super.initState();
-     //getdatafromserver();
+     getdatafromserver();
      print(datas);
-     Boxes.getdata().listenable();
-  }
-  @override
-  void didChangeDependencies(){
-    super.didChangeDependencies();
-    getdatafromserver();
-    datanotifier.value=datas;
   }
   @override
   Widget build(BuildContext context) {
@@ -165,14 +158,15 @@ class _outputpageState extends State<outputpage> {
 
 Future<void> getdatafromserver() async {
   final response= await Session().get(url);
-  if(response.body==200){
+  if(response.statusCode==200){
  serverdata=jsonDecode(response.body) as List;
   for(var i in datas){
      serverdata.removeWhere((element) => element['id']==i.id);
    }
+   
     datanotifier.value=serverdata; 
   }
-  
+  print(serverdata.length);
   
 }
 
@@ -219,8 +213,11 @@ TextButton(onPressed: (){
     }
     var box=Boxes.getdata();
     box.get(data)!.delete();
+
+  //datanotifier.value=datas;
    getdatafromserver();
-    datanotifier.value=datas;
+    
+    
     
   }
 

@@ -45,7 +45,7 @@ void initState(){
    userstate();
    timeleft.cleartimer(hivedata);
   // seturl();
-   
+   Session().checklogin();
   super.initState();  
  
 }
@@ -75,20 +75,13 @@ SharedPreferences prefs= await SharedPreferences.getInstance();
 
   Future<void> userstate()async{
     
-    try{
-      http.Response response=await Session().checklogin();
-      if(response.body=="user is online"){
-      setState(()   {
-        status= authstatus.online;
-      }); 
-    }
-    }on SocketException catch (_){
+   
       SharedPreferences prefs= await SharedPreferences.getInstance();
-      if(prefs.getString('api_key')!=null)
+      if(prefs.getString('api_key') != null)
       setState(() {
         status= authstatus.online;
       });
-    }
+    
     
     setState(() {
       load=true;

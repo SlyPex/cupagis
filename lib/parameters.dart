@@ -51,7 +51,7 @@ class _parameterState extends State<parameter> {
         child: Row(
           children: [
             Text(
-              'set a Hive storage time limit : ',
+              'Time needed to clear Hive : ',
               style: TextStyle(fontSize: 20),
             ),
             Container(

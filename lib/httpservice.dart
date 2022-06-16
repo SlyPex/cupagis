@@ -10,14 +10,9 @@ class Session {
 
 String loginurl="/login";
 
-Future<http.Response> checklogin()async{
-  loginurl=srv.geturl()+loginurl;
+Future<void> checklogin()async{
   prefs=await SharedPreferences.getInstance();
   auth=(await prefs.getString('api_key'))!;
-  http.Response response=await http.get(Uri.parse(loginurl),headers: {
-    HttpHeaders.authorizationHeader: auth
-  });
-  return response;
 }
  Future<http.Response> login( dynamic data) async {
   loginurl=srv.geturl()+loginurl;
