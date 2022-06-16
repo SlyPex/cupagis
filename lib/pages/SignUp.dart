@@ -13,37 +13,32 @@ class MyRegister extends StatefulWidget {
 }
 
 class _MyRegisterState extends State<MyRegister> {
-  String username='';
-  String email='';
-  String password='';
+  String username = '';
+  String email = '';
+  String password = '';
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
-        
-        
         body: Stack(
           children: [
-           
             SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.only(
-                    top: 50),
+                padding: EdgeInsets.only(top: 50),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                'Create\nAccount',
-                style: TextStyle(color: Colors.black, fontSize: 33),
-              ),
+                      'Create\nAccount',
+                      style: TextStyle(color: Colors.black, fontSize: 33),
+                    ),
                     Container(
                       margin: EdgeInsets.only(left: 35, right: 35),
                       child: Column(
                         children: [
-                          
                           TextField(
                             onChanged: (value) {
-                              username=value;
+                              username = value;
                             },
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
@@ -71,7 +66,7 @@ class _MyRegisterState extends State<MyRegister> {
                           TextField(
                             onChanged: ((value) {
                               setState(() {
-                                email=value;
+                                email = value;
                               });
                             }),
                             style: TextStyle(color: Colors.black),
@@ -100,7 +95,7 @@ class _MyRegisterState extends State<MyRegister> {
                           TextField(
                             onChanged: (value) {
                               setState(() {
-                                password=value;
+                                password = value;
                               });
                             },
                             style: TextStyle(color: Colors.black),
@@ -144,9 +139,9 @@ class _MyRegisterState extends State<MyRegister> {
                                     color: Colors.white,
                                     onPressed: () {
                                       registeruser();
-                                      print('name :'+username);
-                                      print('email:'+email);
-                                      print('password:'+password);
+                                      print('name :' + username);
+                                      print('email:' + email);
+                                      print('password:' + password);
                                     },
                                     icon: Icon(
                                       Icons.arrow_forward,
@@ -162,7 +157,10 @@ class _MyRegisterState extends State<MyRegister> {
                             children: [
                               TextButton(
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: ((context) => MyLogin())));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: ((context) => MyLogin())));
                                 },
                                 child: Text(
                                   'Sign In',
@@ -188,25 +186,27 @@ class _MyRegisterState extends State<MyRegister> {
       ),
     );
   }
-void showerror(String msg)=>Fluttertoast.showToast(
-  msg: msg,
-  toastLength: Toast.LENGTH_LONG,
-  backgroundColor: Colors.red
-);
 
-  String url="http://192.168.43.149:5000/register";
-  Future<void> registeruser() async{
-    if((email!="")||(username!="")||(password!="")){
-      http.Response response=await http.post(Uri.parse(url),body: jsonEncode({"username":username,"email":email,"password":password}));
-      if(response.body=="register success"){
+  void showerror(String msg) => Fluttertoast.showToast(
+      msg: msg, toastLength: Toast.LENGTH_LONG, backgroundColor: Colors.red);
+
+  String url = "/register";
+
+  Future<void> registeruser() async {
+    if ((email != "") || (username != "") || (password != "")) {
+      http.Response response = await http.post(Uri.parse(url),
+          body: jsonEncode(
+              {"username": username, "email": email, "password": password}));
+      if (response.body == "register success") {
         showtoast(jsonDecode(response.body));
-      }else{
+      } else {
         showerror(response.body);
       }
     }
   }
-   void showtoast(String msg)=>Fluttertoast.showToast(
-    msg: msg,
-    fontSize: 16,
-    );
+
+  void showtoast(String msg) => Fluttertoast.showToast(
+        msg: msg,
+        fontSize: 16,
+      );
 }

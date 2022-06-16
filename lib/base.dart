@@ -78,7 +78,7 @@ void initState(){
    
   }
 
-  String url="http://192.168.43.149:5000";
+  String url="";
   void senddatatoserver()async{
    var data=datas.toList().where((element) => element.id==0);
    for(var i in data){

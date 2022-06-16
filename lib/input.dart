@@ -30,15 +30,15 @@ class _InputState extends State<Input> {
  
  DateTime dateTime=DateTime.now();
   final items = [
-    "Humidité",
-    "Azote",
+    "Humidity",
+    "Nitrogen",
     "Phosphate",
-    "Information Libre",
-    "Humidité Diviner",
-    "Indice de végétation NDVI",
-    "Radio Spectromètre",
-    "Capteur NPK",
-    "Capteur Conductivité Eléctrique"
+    "Free Information",
+    "Humidity Diviner",
+    "Vegetation index NDVI",
+    "Radio Spectrometer",
+    "NPK Sensor",
+    "Electronic Conductivity Sensor"
   ];
   List<datatype> item = [];
  bool hasinternet=false;
@@ -121,36 +121,7 @@ class _InputState extends State<Input> {
         );
   }
 
-  Widget BottomNavigationBar() {
-    return BottomAppBar(
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Expanded(
-            child: MaterialButton(
-                child: Icon(
-                  Icons.home_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                onPressed: () async {})),
-       
-        Expanded(
-            child: MaterialButton(
-                child: Icon(
-                  Icons.save_rounded,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                onPressed: () async {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const outputpage()));
-                }))
-      ]),
-      color: Colors.blue,
-    );
-  }
-
+  
   Widget buildMenuitem({required String text, VoidCallback? onClicked}) {
     return Container(
         height: 100,
@@ -335,7 +306,7 @@ Widget dateinput(){
                     return gpsinput();
                   else {
                     if(item[i].subitems![index].uiType==UiType.DATE)
-                    return dateinput();
+                    return SizedBox();
                     else{
                       if(item[i].subitems![index].uiType==UiType.TEXT)
                       return inputform(
@@ -373,7 +344,7 @@ Widget dateinput(){
 
 
   Future<void> putdata() async {
-    final datevalue= DateFormat('dd/MM/yyyy').format(dateTime);
+    final datevalue= DateFormat('dd/MM/yyyy').format(DateTime.now());
     var j = item.indexWhere((element) => element.intitule == value);
     Map<String, dynamic> json = {
       "Type": value,
@@ -381,9 +352,9 @@ Widget dateinput(){
     for (var i = 0; i < item[j].subitems!.length; i++) {
       if (item[j].subitems![i].intitule == 'GPS') {
         json['GPS'] = {
-          'LAT': locationlat.text,
-          'LONG': locationlong.text,
-          'ALT': locationalt.text
+          'LAT': double.parse(locationlat.text),
+          'LONG': double.parse(locationlong.text),
+          'ALT': double.parse(locationalt.text)
         };
       } else {
         if(item[j].subitems![i].intitule=='Date'){
@@ -402,8 +373,7 @@ Widget dateinput(){
    final box =Boxes.getdata();
     hasinternet = await InternetConnectionChecker().hasConnection;
     if(hasinternet){
-      print('has connection');
-     String url="http://192.168.43.149:5000";
+     String url="";
      var response= await Session().post(url,jsonEncode({"data":json}));
     showtoast(response.body.toString());
     data.id=int.parse(response.headers['id'].toString()) ;

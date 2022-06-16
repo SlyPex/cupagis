@@ -13,7 +13,6 @@ class MyLogin extends StatefulWidget {
 }
 
 class _MyLoginState extends State<MyLogin> {
-   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String email = "";
   String password = "";
   @override
@@ -145,11 +144,9 @@ class _MyLoginState extends State<MyLogin> {
   Future <void> login() async{
 var response=await Session().login(jsonEncode({"username":email,"password":password}));
 if(response.body=="login success"){
-   Navigator.pushAndRemoveUntil(
-      context,
-     MaterialPageRoute(
-   builder: (context) => Base()),
-   (Route<dynamic> route) => false,);
+ 
+  Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) => Base()))
+  );
    showtoast(response.body);
    
 }else showerror(response.body);

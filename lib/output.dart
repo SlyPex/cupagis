@@ -20,7 +20,7 @@ class _outputpageState extends State<outputpage> {
   var keys=Boxes.getdata().keys.toList().cast<int>();
   List serverdata=[];
   final ValueNotifier datanotifier=ValueNotifier([]);
-  String url="http://192.168.43.149:5000";
+  String url="";
   @override
   void initState(){
     super.initState();
@@ -95,7 +95,7 @@ class _outputpageState extends State<outputpage> {
     return ListView.builder(
       
        // reverse: true,
-          itemCount: datas.length+serverdata.length,//serverdata.length+datas.length,
+          itemCount: datas.length+serverdata.length,
           itemBuilder: (BuildContext context, index) {
             Map data={};
             var id;
@@ -113,26 +113,23 @@ class _outputpageState extends State<outputpage> {
               child: ExpansionTile(
                 tilePadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 title:index<datas.length ? Text(
-                 key.toString()+
-                  'this is hive: '+data["Type"].toString(),
+                 data["Type"].toString(),
                   maxLines: 4,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ):Text(
-                  id.toString()+
-                  'this is server: '+data["Type"].toString(),
+                  data["Type"].toString(),
                   maxLines: 4,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 subtitle: Text(data["Date"].toString()),
                 trailing: data.containsKey('GPS')
-                      ? Text('X: '+data['GPS']['LAT'] +
+                      ? Text('X: '+data['GPS']['LAT'].toString() +
                           "\nY: " +
-                          data['GPS']['LONG'] +
+                          data['GPS']['LONG'].toString() +
                           "\nZ: " +
-                          data['GPS']['ALT'])
+                          data['GPS']['ALT'].toString())
                       : null,
                 children: [
-                  Text(index.toString()),
                    for(var i=0;i<data.length;i++)
                    (data.keys.toList()[i]!='Date' && data.keys.toList()[i]!='Type' && data.keys.toList()[i]!='GPS')?
                    Text(data.keys.toList()[i].toString() +
@@ -168,13 +165,14 @@ class _outputpageState extends State<outputpage> {
 
 Future<void> getdatafromserver() async {
   final response= await Session().get(url);
-   serverdata=jsonDecode(response.body) as List;
-   for(var i in datas){
-     print(i.id);
-     print(i.CaptData);
+  if(response.body==200){
+ serverdata=jsonDecode(response.body) as List;
+  for(var i in datas){
      serverdata.removeWhere((element) => element['id']==i.id);
    }
-    datanotifier.value=serverdata;
+    datanotifier.value=serverdata; 
+  }
+  
   
 }
 
@@ -223,8 +221,9 @@ TextButton(onPressed: (){
     box.get(data)!.delete();
    getdatafromserver();
     datanotifier.value=datas;
-   // getdatafromserver();
+    
   }
+
    void logout() async{
     http.Response response= await Session().logout();
     if(response.statusCode==200)

@@ -1,6 +1,6 @@
 [{
     "ITEM": "PANEL_HUMID",
-    "INTITULE": "Humidité",
+    "INTITULE": "Humidity",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -8,7 +8,7 @@
     "VALUES": [],
     "SUBITEMS": [{
             "SUBITEM": "PANEL_HUMID_VALUE",
-            "INTITULE": "Humidité",
+            "INTITULE": "Humidity",
             "FORMAT": "0000",
             "VISIBLE": "1",
             "UI_TYPE": "REAL",
@@ -39,7 +39,7 @@
 },
 {
     "ITEM": "PANEL_AZOTE",
-    "INTITULE": "Azote",
+    "INTITULE": "Nitrogen",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -47,7 +47,7 @@
     "VALUES": [],
     "SUBITEMS": [{
         "SUBITEM": "PANEL_AZOTE_VALUE",
-        "INTITULE": "Azote",
+        "INTITULE": "Nitrogen",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -113,7 +113,7 @@
 },
 {
     "ITEM": "PANEL_INFO",
-    "INTITULE": "Information Libre",
+    "INTITULE": "Free Information",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -121,7 +121,7 @@
     "VALUES": [],
     "SUBITEMS": [{
         "SUBITEM": "PANEL_INFO_CLIM",
-        "INTITULE": "Description du climat",
+        "INTITULE": "Description of the climate",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -150,7 +150,7 @@
 },
 {
     "ITEM": "PANEL_DIVINER",
-    "INTITULE": "Humidité Diviner",
+    "INTITULE": "Humidity Diviner",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "MULTIPLE",
@@ -158,7 +158,7 @@
     "VALUES": [],
     "SUBITEMS": [{
         "SUBITEM": "PANEL_DIVINER_PRONF",
-        "INTITULE": "Profondeur",
+        "INTITULE": "Depth",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -167,7 +167,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_DIVINER_HUMIDITE",
-        "INTITULE": "Humidité",
+        "INTITULE": "Humidity",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -196,7 +196,7 @@
 },
 {
     "ITEM": "PANEL_NDVI",
-    "INTITULE": "Indice de végétation NDVI",
+    "INTITULE": "Vegetation index NDVI",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -204,7 +204,7 @@
     "VALUES": [],
     "SUBITEMS": [{
         "SUBITEM": "PANEL_NDVI_VALUE",
-        "INTITULE": "Indice NDVI",
+        "INTITULE": "Index NDVI",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -233,7 +233,7 @@
 },
 {
     "ITEM": "PANEL_RADIOSPECTRO",
-    "INTITULE": "Radio Spectromètre",
+    "INTITULE": "Radio Spectrometer",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -241,7 +241,7 @@
     "VALUES": [],
     "SUBITEMS": [{
         "SUBITEM": "PANEL_RADIOSPECTRO_SPECTRE",
-        "INTITULE": "Spectre",
+        "INTITULE": "spectrum",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "TXT",
@@ -250,7 +250,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_RADIOSPECTRO_VALUE",
-        "INTITULE": "Valeur",
+        "INTITULE": "value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -279,7 +279,7 @@
 },
 {
     "ITEM": "PANEL_NPK",
-    "INTITULE": "Capteur NPK",
+    "INTITULE": "NPK Sensor",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -287,7 +287,7 @@
     "VALUES": [],
     "SUBITEMS": [{
         "SUBITEM": "PANEL_NPK_N",
-        "INTITULE": "Valeur Azote",
+        "INTITULE": "Nitrogen Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -296,7 +296,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_NPK_P",
-        "INTITULE": "Valeur Phosphore",
+        "INTITULE": "Phosphorus Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -305,7 +305,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_NPK_K",
-        "INTITULE": "Valeur Potassium",
+        "INTITULE": "Potassium Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -334,7 +334,7 @@
 },
 {
     "ITEM": "PANEL_CONDUCT",
-    "INTITULE": "Capteur Conductivité Eléctrique",
+    "INTITULE": "Electronic Conductivity Sensor",
     "FORMAT": "0000",
     "VISIBLE": "1",
     "UI_TYPE": "REAL",
@@ -342,7 +342,7 @@
     "VALUES": [],
     "SUBITEMS": [{
         "SUBITEM": "PANEL_CONDUCT_1conductivite",
-        "INTITULE": "Valeur Conductivité",
+        "INTITULE": "Conductivity value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -351,7 +351,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_CONDUCT_2humidite",
-        "INTITULE": "Valeur Humidité",
+        "INTITULE": "Humidity value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -360,7 +360,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_CONDUCT_3temperature",
-        "INTITULE": "Valeur Température",
+        "INTITULE": "Temperature Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -369,7 +369,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_CONDUCT_4PH",
-        "INTITULE": "Valeur PH",
+        "INTITULE": "PH Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -378,7 +378,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_CONDUCT_azote",
-        "INTITULE": "Valeur Azote",
+        "INTITULE": "Nitrogen Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -387,7 +387,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_CONDUCT_phosphore",
-        "INTITULE": "Valeur Phosphore",
+        "INTITULE": "Phosphorus Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
@@ -396,7 +396,7 @@
         "VALUE": ""
     }, {
         "SUBITEM": "PANEL_CONDUCT_potassium",
-        "INTITULE": "Valeur Potassium",
+        "INTITULE": "Potassium Value",
         "FORMAT": "0000",
         "VISIBLE": "1",
         "UI_TYPE": "REAL",
