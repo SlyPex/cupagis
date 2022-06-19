@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:cupajis/httpservice.dart';
 import 'package:cupajis/pages/SignIn.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+
+import '../parameters.dart';
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
@@ -28,6 +31,32 @@ class _MyRegisterState extends State<MyRegister> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Container(
+                    width: MediaQuery.of(context).size.width,
+                    alignment: Alignment.topRight,
+                    margin: EdgeInsets.only(right: 10),
+                    child: InkWell(
+                      child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.black),
+                                      borderRadius: BorderRadius.all(
+                       const Radius.circular(20.0),
+                      
+                                      ),
+                                  ),
+                              
+                                 child: Icon(
+                              Icons.settings,
+                              size: 26.0,
+                            ),
+                              ),
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>parameter()));
+                          },  
+                    ),
+             ),
                     Text(
                       'Create\nAccount',
                       style: TextStyle(color: Colors.black, fontSize: 33),
@@ -194,13 +223,13 @@ class _MyRegisterState extends State<MyRegister> {
 
   Future<void> registeruser() async {
     if ((email != "") || (username != "") || (password != "")) {
-      http.Response response = await http.post(Uri.parse(url),
-          body: jsonEncode(
+      var response = await Session().post(url,
+           jsonEncode(
               {"username": username, "email": email, "password": password}));
-      if (response.body == "register success") {
-        showtoast(jsonDecode(response.body));
+      if (response['result'].body == "register success") {
+        showtoast(jsonDecode(response['result'].body));
       } else {
-        showerror(response.body);
+        showerror(response['result'].body);
       }
     }
   }

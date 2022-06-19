@@ -3,13 +3,11 @@ import 'package:cupajis/datatypes.dart';
 import 'package:cupajis/pages/SignIn.dart';
 import 'package:cupajis/parameters.dart';
 import 'package:intl/intl.dart';
-import 'package:cupajis/output.dart';
 import 'package:cupajis/userinput.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cupajis/databox.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:cupajis/httpservice.dart';
 import 'package:cupajis/hivemodel/datalist.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -289,7 +287,7 @@ Widget dateinput(){
     return  FutureBuilder(
         future:  ReadJsonData(),
         builder: (context, data)  {
-          if(data.connectionState!=ConnectionState.done)
+          if(!data.hasData)
           {return SizedBox();};
           item =  data.data as List<datatype>;
           var count;
@@ -360,7 +358,9 @@ Widget dateinput(){
         if(item[j].subitems![i].intitule=='Date'){
         json['Date']=datevalue;}
         else{
-        json[item[j].subitems![i].intitule.toString()] = Textcontroller[i].text;
+          if(item[j].subitems![i].uiType==UiType.REAL)
+        json[item[j].subitems![i].intitule.toString()] = double.parse(Textcontroller[i].text);
+        else json[item[j].subitems![i].intitule.toString()] = Textcontroller[i].text;
         }
       }
       
@@ -369,14 +369,11 @@ Widget dateinput(){
    final data = datalist()
    ..CaptData =jsonEncode(json)
    ..id=0;
-   print(data.CaptData);
    final box =Boxes.getdata();
-    hasinternet = await InternetConnectionChecker().hasConnection;
-    if(hasinternet){
-     String url="";
-     var response= await Session().post(url,jsonEncode({"data":json}));
-    showtoast(response.body.toString());
-    data.id=int.parse(response.headers['id'].toString()) ;
+     var response= await Session().post("/",jsonEncode({"data":json}));
+     if(response["success"]){
+    showtoast(response["result"].body.toString());
+    data.id=int.parse(response['result'].headers['id'].toString()) ;
     }else{
    showtoast("saved locally");
     }

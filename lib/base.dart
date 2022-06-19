@@ -82,9 +82,9 @@ void initState(){
   void senddatatoserver()async{
    var data=datas.toList().where((element) => element.id==0);
    for(var i in data){
-     http.Response response=await Session().post(url,jsonEncode({"data":jsonDecode(i.CaptData)}));
-    print(response.body);
-   var id=response.headers['id'];
+     var response=await Session().post(url,jsonEncode({"data":jsonDecode(i.CaptData)}));
+    print(response['result'].body);
+   var id=response['result'].headers['id'];
     i.id=int.parse(id!);
     i.save();
    }

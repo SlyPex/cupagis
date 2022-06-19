@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cupajis/httpservice.dart';
+import 'package:cupajis/parameters.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'SignUp.dart';
@@ -21,12 +22,39 @@ class _MyLoginState extends State<MyLogin> {
       child: Scaffold(
         body: Stack(
           children: [
-            SingleChildScrollView(
+           SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.only(top: 50),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                   Container(
+                    width: MediaQuery.of(context).size.width,
+                    alignment: Alignment.topRight,
+                    margin: EdgeInsets.only(right: 10),
+                    child: InkWell(
+                      child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.black),
+                                      borderRadius: BorderRadius.all(
+                       const Radius.circular(20.0),
+                      
+                                      ),
+                                  ),
+                              
+                                 child: Icon(
+                              Icons.settings,
+                              size: 26.0,
+                            ),
+                              ),
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>parameter()));
+                          },  
+                    ),
+             ),
+
                     Text(
                       'Welcome\nBack',
                       style: TextStyle(color: Colors.black, fontSize: 33),
@@ -143,13 +171,13 @@ class _MyLoginState extends State<MyLogin> {
 
   Future <void> login() async{
 var response=await Session().login(jsonEncode({"username":email,"password":password}));
-if(response.body=="login success"){
+if(response['result'].body=="login success"){
  
   Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) => Base()))
   );
-   showtoast(response.body);
+   showtoast(response['result'].body);
    
-}else showerror(response.body);
+}else showerror(response['result'].body);
 
  }
 

@@ -32,8 +32,8 @@ class _parameterState extends State<parameter> {
     prefs = await SharedPreferences.getInstance();
     if (prefs.getInt("expirationtime") != null)
       _controller.text = prefs.getInt("expirationtime").toString();
-    if(prefs.getString("") != null)
-    _urlcontroller.text=prefs.getString("").toString();
+    if(prefs.getString("url") != null)
+    _urlcontroller.text=prefs.getString("url").toString();
   }
 
   @override
@@ -89,6 +89,7 @@ class _parameterState extends State<parameter> {
                 onSubmitted: (value) async {
                   prefs = await SharedPreferences.getInstance();
                   prefs.setString("url", value);
+                  server().seturl(value);
                 },
       ),
       TextButton(
@@ -119,12 +120,17 @@ class timer {
     });
   }
 }
-class server{
-  String url="http://192.168.1.189:5000";
+ class server{
+   String url="http://192.168.43.149:5000";
+   
+ void initializeurl()async{
+   SharedPreferences prefs=await SharedPreferences.getInstance();
+   this.url=prefs.getString("url")!;
+ }
   void seturl(String url){
     this.url=url;
   }
   String geturl(){
-    return this.url;
+    return url;
   }
 }

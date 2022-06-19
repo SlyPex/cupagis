@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:cupajis/pages/SignIn.dart';
 import 'package:cupajis/parameters.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'httpservice.dart';
 import 'databox.dart';
@@ -16,29 +17,29 @@ class outputpage extends StatefulWidget {
 }
 
 class _outputpageState extends State<outputpage> {
-  var datas =Boxes.getdata().values.toList().cast<datalist>();
+  List datas =[];
   var keys=Boxes.getdata().keys.toList().cast<int>();
+  final scrollcontroller = ScrollController();
   List serverdata=[];
   final ValueNotifier datanotifier=ValueNotifier([]);
   String url="";
   @override
   void initState(){
     super.initState();
-     getdatafromserver();
-     print(datas);
+     refresh();
   }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFDCDCDC),
         appBar:  AppBar(
           actions: [
             Padding(
       padding: EdgeInsets.only(right: 20.0),
       child: GestureDetector(
         onTap: () {
-         datanotifier.value=datas;
-        getdatafromserver();
-   
+          refresh();  
         },
         child: Icon(
           Icons.refresh,
@@ -74,13 +75,14 @@ class _outputpageState extends State<outputpage> {
           ],
         ),
         body:
+      
+              ValueListenableBuilder(
+                 valueListenable:  datanotifier,
+                 builder: (context, box, _) {
+                   return silverlist();
+                 },
+               ),
            
-           ValueListenableBuilder(
-               valueListenable:  datanotifier,
-               builder: (context, box, _) {
-                 return listdata();
-               },
-             ),
         );
   }
 
@@ -140,52 +142,160 @@ class _outputpageState extends State<outputpage> {
   }
 
 
-  Widget button() {
-    return MaterialButton(
-      onPressed: (() {
+Widget silverlist(){
+  return CustomScrollView(
+      slivers: [
+     
+       title("locale data"),
+       datas.isEmpty ? caselistempty():
+         SliverList(
+          
+            delegate: SliverChildBuilderDelegate((BuildContext context,int index)  {
+             var data= jsonDecode(datas[index].CaptData);
+               var  key=keys[index%datas.length];
+               
+              return article(data, key,datas[index%datas.length].id, index%datas.length);
+            },
+            childCount: datas.length,
+            )
+          ),
         
-      }),
-      color: Colors.blue,
-      textColor: Color.fromARGB(255, 8, 7, 7),
-      child: const Icon(
-        Icons.add,
-        size: 42,
-      ),
-      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+       title("sever data"),
+       serverdata.isEmpty ? caselistempty():
+      SliverList(delegate: SliverChildBuilderDelegate((BuildContext context,int index) {
+       var data=serverdata[index]['data'];
+              var  id=serverdata[index]['id'];
+             var key=0;
+        return article(data,key, id, index);
+      },
+      childCount: serverdata.length
+      ))
+      ],
+    
+  );
+}
+
+Widget title(String title){
+  return SliverToBoxAdapter(
+           child: Container(
+            margin: EdgeInsets.only(top: 20),
+              height: 30,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(20.0),
+                    topRight: const Radius.circular(20.0),
+                  ),
+              ),
+              width: MediaQuery.of(context).size.width,
+              alignment: Alignment.center,
+              child: Text(title,style: TextStyle(fontSize: 20),),
+            ),
     );
-  }
+}
+
+Widget caselistempty(){
+  return SliverToBoxAdapter(
+       child:  Container(
+        margin: EdgeInsets.only(bottom: 20),
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: const Radius.circular(20.0),
+                    bottomRight: const Radius.circular(20.0),
+                  ),
+              ),
+              width: MediaQuery.of(context).size.width,
+              alignment: Alignment.center,
+              child: Text("there is no data",style: TextStyle(fontSize: 20),),
+            ),
+          
+        
+      
+     );
+}
+
+Widget article(dynamic data,int key,int id,int index){
+  return  Container(
+    padding: EdgeInsets.all(10),
+    color: Colors.white,
+    child: Card(
+        elevation: 5,
+                  color: Colors.white,
+                  child: ExpansionTile(
+                    tilePadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    title:index<datas.length ? Text(
+                     data["Type"].toString(),
+                      maxLines: 4,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ):Text(
+                      data["Type"].toString(),
+                      maxLines: 4,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    subtitle: Text(data["Date"].toString()),
+                    trailing: data.containsKey('GPS')
+                          ? Text('X: '+data['GPS']['LAT'].toString() +
+                              "\nY: " +
+                              data['GPS']['LONG'].toString() +
+                              "\nZ: " +
+                              data['GPS']['ALT'].toString())
+                          : null,
+                    children: [
+                       for(var i=0;i<data.length;i++)
+                       (data.keys.toList()[i]!='Date' && data.keys.toList()[i]!='Type' && data.keys.toList()[i]!='GPS')?
+                       Text(data.keys.toList()[i].toString() +
+                           ': ' +
+                           data.values.toList()[i].toString()):Container(),
+                     
+                             
+                    
+                      buildbuttons(context, key,id)
+                      
+                    ],
+                  ),
+                
+    ),
+  );
+}
+
 
 Future<void> getdatafromserver() async {
   final response= await Session().get(url);
-  if(response.statusCode==200){
- serverdata=jsonDecode(response.body) as List;
+  if(response["success"]){
+ serverdata=jsonDecode(response["result"].body) as List;
   for(var i in datas){
      serverdata.removeWhere((element) => element['id']==i.id);
    }
    
     datanotifier.value=serverdata; 
   }
-  print(serverdata.length);
+  
   
 }
 
+Future<void> refresh()async{
+  datas=await Boxes.getdata().values.toList().cast<datalist>();
+  datanotifier.value=datas;
+  getdatafromserver();
+}
 
- Widget buildbuttons(BuildContext context, var data,var id) {
+ Widget buildbuttons(BuildContext context, var key,var id) {
    return Row(
      children: [
        Expanded(
          child: TextButton.icon(
            label: Text('Delete'),
            icon: Icon(Icons.delete),
-           onPressed: () =>showdialog(data,id),
+           onPressed: () =>showdialog(key,id),
          ),
        )
      ],
    );
  }
 
-  Future showdialog(var data,var id){
+  Future showdialog(var key,var id){
     return showDialog(
       context: context,
       builder: (BuildContext context){
@@ -197,7 +307,7 @@ Future<void> getdatafromserver() async {
               Navigator.pop(context);
             }, child: Text("CANCEL")),
 TextButton(onPressed: (){
-              deletedata(data,id);
+              deletedata(key,id);
               Navigator.pop(context);
             }, child: Text("DELETE")),
           ],
@@ -206,20 +316,26 @@ TextButton(onPressed: (){
     );
   }
 
-  void deletedata(var data,var id) async{
+  void deletedata(var key,var id) async{
     if(id!=0){
-      http.Response response=await Session().delete(url,jsonEncode(id));
-      print(response.body);
+      var response=await Session().delete(url,jsonEncode(id));
+      
+      if(response['result'].statusCode==200)
+      showtoast(response['result'].body);
     }
     var box=Boxes.getdata();
-    box.get(data)!.delete();
-
-  //datanotifier.value=datas;
-   getdatafromserver();
+    if(box.containsKey(key))
+    box.get(key)?.delete();
+refresh();
     
     
     
   }
+
+  void showtoast(String msg)=>Fluttertoast.showToast(
+    msg: msg,
+    fontSize: 16,
+    );
 
    void logout() async{
     http.Response response= await Session().logout();
@@ -227,3 +343,4 @@ TextButton(onPressed: (){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>MyLogin()));
   }
 }
+

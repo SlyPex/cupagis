@@ -10,49 +10,93 @@ class Session {
 
 String loginurl="/login";
 
+
 Future<void> checklogin()async{
   prefs=await SharedPreferences.getInstance();
   auth=(await prefs.getString('api_key'))!;
 }
- Future<http.Response> login( dynamic data) async {
+ Future<dynamic> login( dynamic data) async {
   loginurl=srv.geturl()+loginurl;
+  try{
     http.Response response = await http.post(Uri.parse(loginurl), body: data);
+   if(response.statusCode==200){
     if(response.body=="login success"){
     var header=response.headers['api-key'];
     auth=header!;
     prefs= await SharedPreferences.getInstance();
     prefs.setString('api_key', auth);}
-    
-    return response;
+    final jsonresponse={"success": true,"result":response};
+    return jsonresponse;}
+    } on SocketException {
+      final jsonresponse={"success": false,"result":"NO_INTERNET"};
+      return jsonresponse;
+    } on HttpException{
+      final jsonresponse={"success": false,"result":"SOMETHING_WRONG"};
+      return jsonresponse;
+    }
   }
 
-  Future<http.Response> get(String url) async {
+  Future<dynamic> get(String url) async {
     url=srv.geturl()+url;
+    
+    try{
     http.Response response = await http.get(Uri.parse(url),headers: {
       HttpHeaders.authorizationHeader: auth,
     });
-    return response;
+    if(response.statusCode==200){
+    final jsonresponse={"success": true,"result":response};
+    return jsonresponse;}
+    } on SocketException {
+      final jsonresponse={"success": false,"result":"NO_INTERNET"};
+      return jsonresponse;
+    } on HttpException{
+      final jsonresponse={"success": false,"result":"SOMETHING_WRONG"};
+      return jsonresponse;
+    }
   }
 
- Future<http.Response> post(String url,var data) async {
+ Future<dynamic> post(String url,var data) async {
   url=srv.geturl()+url;
+  try{
     http.Response response = await http.post(Uri.parse(url),body:data,headers: {
       HttpHeaders.authorizationHeader: auth,
     });
-    return response;
-  }
+    if(response.statusCode==200){
+    final jsonresponse={"success": true,"result":response};
+    return jsonresponse;}
+    } on SocketException {
+      final jsonresponse={"success": false,"result":"NO_INTERNET"};
+      return jsonresponse;
+    } on HttpException{
+      final jsonresponse={"success": false,"result":"SOMETHING_WRONG"};
+      return jsonresponse;
+    }
+    }
 
- Future<http.Response> delete(String url,var data) async {
+ Future<dynamic> delete(String url,var data) async {
   url=srv.geturl()+url;
+  try{
     http.Response response = await http.delete(Uri.parse(url),body:data,headers: {
       HttpHeaders.authorizationHeader: auth,
     });
-    return response;
+    if(response.statusCode==200){
+    final jsonresponse={"success": true,"result":response};
+    return jsonresponse;}else{
+      final jsonresponse={"success": false,"result":response};
+      return jsonresponse;
+    }
+    } on SocketException {
+      final jsonresponse={"success": false,"result":"NO_INTERNET"};
+      return jsonresponse;
+    } on HttpException{
+      final jsonresponse={"success": false,"result":"SOMETHING_WRONG"};
+      return jsonresponse;
+    }
   }
 
 
  Future<http.Response> logout()async{
-   String url=srv.url+"/logout";
+   String url=srv.geturl()+"/logout";
    prefs=await SharedPreferences.getInstance();
    http.Response response=await http.get(Uri.parse(url),headers: {
      HttpHeaders.authorizationHeader:auth
